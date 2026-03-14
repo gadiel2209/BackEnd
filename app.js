@@ -1,9 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import equipoRoutes from './routes/equipos.routes.js'
-import categoriaRoutes from './routes/categorias.routes.js'
-import solicitudRoutes from './routes/solicitudes.routes.js'
+import equipoRoutes from './src/routes/equipos.routes.js'
+import categoriaRoutes from './src/routes/categorias.routes.js'
+import solicitudRoutes from './src/routes/solicitudes.routes.js'
 
 dotenv.config()
 
