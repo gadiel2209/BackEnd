@@ -21,3 +21,21 @@ export const getMovimientos = async(req, res) => {
         res.status(500).json({ message: error.message })
     }
 }
+
+export const createReporte = async(req, res) => {
+    try {
+        const { id_solicitud, id_usuario_reporta, descripcion } = req.body;
+
+        if (!id_solicitud || !descripcion) {
+            return res.status(400).json({ message: 'Solicitud y descripción son requeridas' });
+        }
+
+        const nuevoId = await reportesModelo.createReporte(id_solicitud, id_usuario_reporta, descripcion);
+        res.status(201).json({
+            message: 'Reporte de incidencia creado correctamente',
+            id_reporte: nuevoId
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

@@ -12,4 +12,7 @@ router.get('/dashboard', ctrl.getDashboardStats)
 // Ruta para movimientos (requiere parámetros ?inicio=...&fin=...)
 router.get('/movimientos', ctrl.getMovimientos)
 
+// Ruta para crear un reporte de incidencia
+router.post('/', ctrl.createReporte);
+
 export default router

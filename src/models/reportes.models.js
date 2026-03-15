@@ -30,3 +30,12 @@ export const getReporteMovimientos = async(inicio, fin) => {
     `, [inicio, fin])
     return rows
 }
+
+// Función para crear un nuevo reporte de incidencia
+export const createReporte = async(id_solicitud, id_usuario_reporta, descripcion) => {
+    const [result] = await db.query(
+        `INSERT INTO reportes (id_solicitud, id_usuario_reporta, descripcion) 
+         VALUES (?, ?, ?)`, [id_solicitud, id_usuario_reporta, descripcion]
+    );
+    return result.insertId;
+};
