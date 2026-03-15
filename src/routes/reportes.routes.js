@@ -3,10 +3,13 @@ import * as ctrl from '../controllers/reportes.controllers.js'
 
 const router = Router()
 
-// Obtener estadísticas para las gráficas del inicio
+// Si entras a /api/reportes/ sin nada más, debe haber una ruta definida
+router.get('/', (req, res) => res.json({ message: "EndPoint de reportes listo" }))
+
+// Ruta para el dashboard (estadísticas)
 router.get('/dashboard', ctrl.getDashboardStats)
 
-// Obtener lista de préstamos filtrados por fecha
+// Ruta para movimientos (requiere parámetros ?inicio=...&fin=...)
 router.get('/movimientos', ctrl.getMovimientos)
 
 export default router
