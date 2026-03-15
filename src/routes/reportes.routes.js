@@ -4,7 +4,8 @@ import * as ctrl from '../controllers/reportes.controllers.js'
 const router = Router()
 
 // Si entras a /api/reportes/ sin nada más, debe haber una ruta definida
-router.get('/', (req, res) => res.json({ message: "EndPoint de reportes listo" }))
+//router.get('/', (req, res) => res.json({ message: "EndPoint de reportes listo" }))
+router.get('/', ctrl.getIncidencias);
 
 // Ruta para el dashboard (estadísticas)
 router.get('/dashboard', ctrl.getDashboardStats)

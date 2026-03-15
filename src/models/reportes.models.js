@@ -39,3 +39,16 @@ export const createReporte = async(id_solicitud, id_usuario_reporta, descripcion
     );
     return result.insertId;
 };
+
+export const getAllReportes = async() => {
+    const [rows] = await db.query(`
+        SELECT r.id_reporte, r.descripcion, r.fecha_reporte, 
+               u.nombre AS administrador, e.nombre AS equipo
+        FROM reportes r
+        JOIN usuarios u ON r.id_usuario_reporta = u.id_usuario
+        JOIN solicitudes s ON r.id_solicitud = s.id_solicitud
+        JOIN equipos e ON s.id_equipo = e.id_equipo
+        ORDER BY r.fecha_reporte DESC
+    `);
+    return rows;
+};
