@@ -1,4 +1,5 @@
 import db from '../config/db.js'
+import bcrypt from 'bcryptjs'
 
 // Obtener todos los usuarios con su rol
 export const getAllUsuarios = async() => {
@@ -35,10 +36,14 @@ export const updatePassword = async(id, nuevaPasswordCifrada) => {
 
 // Crear nuevo usuario (Nota: password debe venir ya cifrada)
 export const createUsuario = async({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
+    // 2. Cifrar la contraseña antes de insertar
+    const salt = await bcrypt.genSalt(10);
+    const passwordCifrada = await bcrypt.hash(password, salt);
+
     const [result] = await db.query(
         `INSERT INTO usuarios (nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol)
          VALUES (?, ?, ?, ?, ?, ?, ?)`, 
-        [nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol]
+        [nombre, ap_paterno, ap_materno, correo, usuario, passwordCifrada, id_rol]
     )
     return { id: result.insertId, nombre, usuario, correo }
 }
@@ -46,18 +51,17 @@ export const createUsuario = async({ nombre, ap_paterno, ap_materno, correo, usu
 // Actualizar usuario existente
 export const updateUsuario = async (id, datos) => {
     try {
-        // 1. Extraer los nombres de las propiedades que vienen en 'datos' (ej: ['password'])
+        // 3. Si en los datos viene 'password', la ciframos antes de seguir
+        if (datos.password) {
+            const salt = await bcrypt.genSalt(10);
+            datos.password = await bcrypt.hash(datos.password, salt);
+        }
+
         const campos = Object.keys(datos);
-        
         if (campos.length === 0) return 0;
 
-        // 2. Construir la parte dinámica del SET: "password = ?" o "nombre = ?, usuario = ?..."
         const setQuery = campos.map(campo => `${campo} = ?`).join(', ');
-        
-        // 3. Obtener los valores en el mismo orden
         const valores = Object.values(datos);
-        
-        // 4. Agregar el ID para el WHERE
         valores.push(id);
 
         const [result] = await db.query(
@@ -67,7 +71,6 @@ export const updateUsuario = async (id, datos) => {
 
         return result.affectedRows;
     } catch (error) {
-        // Esto ayudará a ver en la terminal del servidor qué falló exactamente
         console.error("Error en updateUsuario:", error.message);
         throw error; 
     }
