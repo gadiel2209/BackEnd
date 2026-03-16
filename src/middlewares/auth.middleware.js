@@ -3,12 +3,17 @@ import jwt from 'jsonwebtoken'
 // ── VERIFICAR TOKEN ───────────────────────────────────────────────
 // Úsalo en cualquier ruta que requiera sesión activa
 export const verificarToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    const authHeader = req.headers['authorization'];
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Acceso denegado. Token requerido.' })
-    }
+    // LOG DE SEGURIDAD (Míralo en Vercel Logs)
+    console.log("¿Llegó el header?:", authHeader);
 
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ 
+            message: 'Acceso denegado. Token requerido.',
+            debugHeader: authHeader || 'no llego nada' // Solo para pruebas
+        });
+    }
     const token = authHeader.split(' ')[1]
 
     try {
