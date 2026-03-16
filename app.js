@@ -15,12 +15,7 @@ dotenv.config()
 const app = express()
 
 // Cambia app.use(cors()) por esto:
-app.use(cors({
-    origin: '*', // O tu dominio de Vercel del frontend si quieres más seguridad
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
+app.use(cors());
 app.use(express.json())
 
 // Ruta de cortesía
