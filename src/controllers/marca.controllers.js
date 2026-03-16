@@ -1,7 +1,7 @@
 import * as marcaModelo from '../models/marca.model.js'
 
 // GET ALL
-export const getAllMarcas = async (req, res) => {
+export const getAllMarcas = async(req, res) => {
     try {
         const marcas = await marcaModelo.getAllMarcas()
         res.status(200).json(marcas)
@@ -11,7 +11,7 @@ export const getAllMarcas = async (req, res) => {
 }
 
 // GET BY ID
-export const getMarcaById = async (req, res) => {
+export const getMarcaById = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
         if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
@@ -26,7 +26,7 @@ export const getMarcaById = async (req, res) => {
 }
 
 // CREATE
-export const createMarca = async (req, res) => {
+export const createMarca = async(req, res) => {
     try {
         const { nombre } = req.body
         if (!nombre) return res.status(400).json({ message: 'El campo nombre es requerido' })
@@ -40,8 +40,23 @@ export const createMarca = async (req, res) => {
     }
 }
 
-// DELETE
-export const deleteMarca = async (req, res) => {
+export const updateMarca = async(req, res) => {
+        try {
+            const id = parseInt(req.params.id)
+            const { nombre } = req.body
+            if (isNaN(id) || !nombre) return res.status(400).json({ message: 'Datos insuficientes' })
+
+            const afectados = await marcaModelo.updateMarca(id, nombre)
+            if (afectados === 0) return res.status(404).json({ message: 'Marca no encontrada' })
+
+            res.status(200).json({ message: 'Marca actualizada correctamente' })
+        } catch (error) {
+            if (error.code === 'ER_DUP_ENTRY') return res.status(409).json({ message: 'Esa marca ya existe' })
+            res.status(500).json({ message: error.message })
+        }
+    }
+    // DELETE
+export const deleteMarca = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
         if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
