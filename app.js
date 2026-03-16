@@ -2,13 +2,13 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 
-import equipoRoutes from './src/routes/equipos.routes.js'
-import categoriaRoutes from './src/routes/categorias.routes.js'
-import solicitudRoutes from './src/routes/solicitudes.routes.js'
-import reporteRoutes from './src/routes/reportes.routes.js'
-import marcaRoutes from './src/routes/marca.routes.js'
-import authRoutes from './src/routes/auth.routes.js'
-import usuarioRoutes from './src/routes/usuarios.routes.js'
+import equipoRoutes from './routes/equipos.routes.js'
+import categoriaRoutes from './routes/categorias.routes.js'
+import solicitudRoutes from './routes/solicitudes.routes.js'
+import reporteRoutes from './routes/reportes.routes.js'
+import marcaRoutes from './routes/marca.routes.js'
+import authRoutes from './routes/auth.routes.js'
+import usuarioRoutes from './routes/usuarios.routes.js'
 
 dotenv.config()
 
