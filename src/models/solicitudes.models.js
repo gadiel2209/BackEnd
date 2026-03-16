@@ -1,4 +1,19 @@
 // solicitud.model.js
+import { db } from '../config/db.js'; 
+
+export const getSolicitudesByUsuario = async (id_usuario) => {
+    // Aquí es donde el código fallaba porque no sabía qué era "db"
+    const [rows] = await db.query(`
+        SELECT s.*, e.nombre AS equipo, e.ruta_imagen, c.nombre AS categoria
+        FROM solicitudes s
+        INNER JOIN equipos e ON s.id_equipo = e.id_equipo
+        INNER JOIN categorias c ON e.id_categoria = c.id_categoria
+        WHERE s.id_usuario = ?
+        ORDER BY s.fecha_solicitud DESC
+    `, [id_usuario]);
+    return rows;
+}
+
 
 // Registrar nueva solicitud (valida disponibilidad internamente)
 export const registrarSolicitud = async (id_usuario, id_equipo) => {
@@ -37,17 +52,6 @@ export const getAllSolicitudes = async () => {
         INNER JOIN equipos e ON s.id_equipo = e.id_equipo
     `)
     return rows
-}
-export const getSolicitudesByUsuario = async (id_usuario) => {
-    const [rows] = await db.query(`
-        SELECT s.*, e.nombre AS equipo, e.ruta_imagen, c.nombre AS categoria
-        FROM solicitudes s
-        INNER JOIN equipos e ON s.id_equipo = e.id_equipo
-        INNER JOIN categorias c ON e.id_categoria = c.id_categoria
-        WHERE s.id_usuario = ?
-        ORDER BY s.fecha_solicitud DESC
-    `, [id_usuario]);
-    return rows;
 }
 
 // Obtener las estadísticas para los contadores (stats)
