@@ -6,6 +6,7 @@ import equipoRoutes from './src/routes/equipos.routes.js'
 import categoriaRoutes from './src/routes/categorias.routes.js'
 import solicitudRoutes from './src/routes/solicitudes.routes.js'
 import reporteRoutes from './src/routes/reportes.routes.js'
+import marcaRoutes from './src/routes/marca.routes.js'
 
 dotenv.config()
 
@@ -28,8 +29,8 @@ app.use('/api/equipos', equipoRoutes)
 app.use('/api/categorias', categoriaRoutes)
 app.use('/api/solicitudes', solicitudRoutes)
 app.use('/api/reportes', reporteRoutes)
-
-// Solo encendemos el servidor con .listen si NO estamos en Vercel
+app.use('/api/marcas', marcaRoutes)
+    // Solo encendemos el servidor con .listen si NO estamos en Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000
     app.listen(PORT, () => {
