@@ -1,4 +1,4 @@
-import * as marcaModelo from '../models/marca.model.js';
+import * as marcaModelo from '../models/marca.models.js';
 
 export const getAllMarcas = async(req, res) => {
     try {
