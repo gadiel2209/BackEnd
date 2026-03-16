@@ -1,12 +1,13 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-// Las rutas ahora apuntan correctamente a la carpeta src
-import equipoRoutes from './src/routes/equipos.routes.js'
+
+import equipoRoutes    from './src/routes/equipos.routes.js'
 import categoriaRoutes from './src/routes/categorias.routes.js'
 import solicitudRoutes from './src/routes/solicitudes.routes.js'
-import reporteRoutes from './src/routes/reportes.routes.js'
-import marcaRoutes from './src/routes/marca.routes.js'
+import reporteRoutes   from './src/routes/reportes.routes.js'
+import marcaRoutes     from './src/routes/marca.routes.js'
+import authRoutes      from './src/routes/auth.routes.js'
 
 dotenv.config()
 
@@ -15,22 +16,24 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// Ruta de cortesía para saber que la API funciona al entrar al link principal
+// Ruta de cortesía
 app.get('/', (req, res) => {
     res.json({
-        message: "API de Préstamos funcionando correctamente",
-        author: "Gadiel Hernandez",
-        version: "1.0.0"
-    });
-});
+        message: 'API de Préstamos funcionando correctamente',
+        author:  'Gadiel Hernandez',
+        version: '1.0.0'
+    })
+})
 
-// Tus rutas de la API
-app.use('/api/equipos', equipoRoutes)
-app.use('/api/categorias', categoriaRoutes)
+// Rutas
+app.use('/api/equipos',     equipoRoutes)
+app.use('/api/categorias',  categoriaRoutes)
 app.use('/api/solicitudes', solicitudRoutes)
-app.use('/api/reportes', reporteRoutes)
-app.use('/api/marcas', marcaRoutes)
-    // Solo encendemos el servidor con .listen si NO estamos en Vercel
+app.use('/api/reportes',    reporteRoutes)
+app.use('/api/marcas',      marcaRoutes)
+app.use('/api/auth',        authRoutes)
+
+// Solo levantar servidor local si no estamos en Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000
     app.listen(PORT, () => {
@@ -38,5 +41,4 @@ if (process.env.NODE_ENV !== 'production') {
     })
 }
 
-// Exportación necesaria para Vercel
-export default app;
+export default app
