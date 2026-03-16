@@ -44,14 +44,33 @@ export const createUsuario = async({ nombre, ap_paterno, ap_materno, correo, usu
 }
 
 // Actualizar usuario existente
-export const updateUsuario = async(id, { nombre, ap_paterno, ap_materno, correo, usuario, id_rol }) => {
-    const [result] = await db.query(
-        `UPDATE usuarios
-         SET nombre = ?, ap_paterno = ?, ap_materno = ?, correo = ?, usuario = ?, id_rol = ?
-         WHERE id_usuario = ?`, 
-        [nombre, ap_paterno, ap_materno, correo, usuario, id_rol, id]
-    )
-    return result.affectedRows
+export const updateUsuario = async (id, datos) => {
+    try {
+        // 1. Extraer los nombres de las propiedades que vienen en 'datos' (ej: ['password'])
+        const campos = Object.keys(datos);
+        
+        if (campos.length === 0) return 0;
+
+        // 2. Construir la parte dinámica del SET: "password = ?" o "nombre = ?, usuario = ?..."
+        const setQuery = campos.map(campo => `${campo} = ?`).join(', ');
+        
+        // 3. Obtener los valores en el mismo orden
+        const valores = Object.values(datos);
+        
+        // 4. Agregar el ID para el WHERE
+        valores.push(id);
+
+        const [result] = await db.query(
+            `UPDATE usuarios SET ${setQuery} WHERE id_usuario = ?`,
+            valores
+        );
+
+        return result.affectedRows;
+    } catch (error) {
+        // Esto ayudará a ver en la terminal del servidor qué falló exactamente
+        console.error("Error en updateUsuario:", error.message);
+        throw error; 
+    }
 }
 
 // Eliminar usuario
