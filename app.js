@@ -9,6 +9,7 @@ import reporteRoutes from './src/routes/reportes.routes.js'
 import marcaRoutes from './src/routes/marca.routes.js'
 import authRoutes from './src/routes/auth.routes.js'
 import usuarioRoutes from './src/routes/usuarios.routes.js'
+import usuarioRoutesPublic from './src/routes/usuario.routes.js'
 
 dotenv.config()
 
@@ -35,6 +36,7 @@ app.use('/api/reportes', reporteRoutes)
 app.use('/api/marcas', marcaRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/usuarios', usuarioRoutes)
+app.use('/api/usuario', usuarioRoutesPublic) // Rutas públicas para usuarios (registro, login, etc.)
 
 // Solo levantar servidor local si no estamos en Vercel
 if (process.env.NODE_ENV !== 'production') {
