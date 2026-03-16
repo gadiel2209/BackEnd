@@ -1,5 +1,5 @@
 // solicitud.model.js
-import { db } from '../config/db.js'; 
+import db from '../config/db.js'; // Sin las llaves { }
 
 export const getSolicitudesByUsuario = async (id_usuario) => {
     // Aquí es donde el código fallaba porque no sabía qué era "db"
