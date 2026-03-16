@@ -4,39 +4,77 @@ import * as usuarioModel from '../models/usuario.model.js';
 
 export const register = async (req, res) => {
     try {
-        const { email, password, nombre_completo } = req.body;
-        if (!email || !password || !nombre_completo) return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+        const { nombre, ap_paterno, ap_materno, usuario, correo, password, id_rol } = req.body;
 
-        const existe = await usuarioModel.findUsuarioByEmail(email);
-        if (existe) return res.status(409).json({ message: 'El email ya está registrado' });
+        if (!nombre || !ap_paterno || !ap_materno || !usuario || !correo || !password) {
+            return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+        }
+
+        const existeCorreo = await usuarioModel.findUsuarioByCorreo(correo);
+        if (existeCorreo) return res.status(409).json({ message: 'El correo ya está registrado' });
+
+        const existeUsuario = await usuarioModel.findUsuarioByUsername(usuario);
+        if (existeUsuario) return res.status(409).json({ message: 'El nombre de usuario ya está en uso' });
 
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        const nuevoId = await usuarioModel.createUsuario(email, passwordHash, nombre_completo);
+        // id_rol 2 = Usuario por defecto si no se especifica
+        const rolAsignado = id_rol ?? 2;
+
+        const nuevoId = await usuarioModel.createUsuario({
+            nombre,
+            ap_paterno,
+            ap_materno,
+            usuario,
+            correo,
+            password: passwordHash,
+            id_rol: rolAsignado,
+        });
+
         res.status(201).json({ message: 'Usuario creado con éxito', id: nuevoId });
     } catch (error) {
+        console.error('Error en register:', error);
         res.status(500).json({ error: 'Error interno en el servidor' });
     }
 };
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const usuario = await usuarioModel.findUsuarioByEmail(email);
-        if (!usuario) return res.status(401).json({ message: 'Credenciales inválidas' });
+        const { correo, password } = req.body;
 
-        const esValida = await bcrypt.compare(password, usuario.password_hash);
+        if (!correo || !password) {
+            return res.status(400).json({ message: 'Correo y contraseña son obligatorios' });
+        }
+
+        const usuarioEncontrado = await usuarioModel.findUsuarioByCorreo(correo);
+        if (!usuarioEncontrado) return res.status(401).json({ message: 'Credenciales inválidas' });
+
+        const esValida = await bcrypt.compare(password, usuarioEncontrado.password);
         if (!esValida) return res.status(401).json({ message: 'Credenciales inválidas' });
 
         const token = jwt.sign(
-            { id: usuario.id_usuario, email: usuario.email, rol: usuario.rol },
+            {
+                id: usuarioEncontrado.id_usuario,
+                correo: usuarioEncontrado.correo,
+                usuario: usuarioEncontrado.usuario,
+                id_rol: usuarioEncontrado.id_rol,
+            },
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
 
-        res.json({ token, usuario: { id: usuario.id_usuario, nombre: usuario.nombre_completo, rol: usuario.rol } });
+        res.json({
+            token,
+            usuario: {
+                id: usuarioEncontrado.id_usuario,
+                nombre: `${usuarioEncontrado.nombre} ${usuarioEncontrado.ap_paterno}`,
+                usuario: usuarioEncontrado.usuario,
+                id_rol: usuarioEncontrado.id_rol,
+            },
+        });
     } catch (error) {
+        console.error('Error en login:', error);
         res.status(500).json({ error: 'Error en el proceso de login' });
     }
 };
