@@ -1,6 +1,6 @@
 import db from '../config/db.js'
 
-// GET ALL - con nombre de rol
+// Obtener todos los usuarios con su rol
 export const getAllUsuarios = async() => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno, 
@@ -12,7 +12,7 @@ export const getAllUsuarios = async() => {
     return rows
 }
 
-// GET BY ID
+// Obtener un usuario por ID
 export const getUsuarioById = async(id) => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno, 
@@ -25,28 +25,28 @@ export const getUsuarioById = async(id) => {
     return rows[0]
 }
 
-// CREATE
+// Crear nuevo usuario (Nota: password debe venir ya cifrada)
 export const createUsuario = async({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
     const [result] = await db.query(
         `INSERT INTO usuarios (nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol)
-        VALUES (?, ?, ?, ?, ?, ?, ?)`, 
+         VALUES (?, ?, ?, ?, ?, ?, ?)`, 
         [nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol]
     )
-    return { id: result.insertId, nombre, usuario, correo, id_rol }
+    return { id: result.insertId, nombre, usuario, correo }
 }
 
-// UPDATE
+// Actualizar usuario existente
 export const updateUsuario = async(id, { nombre, ap_paterno, ap_materno, correo, usuario, id_rol }) => {
     const [result] = await db.query(
         `UPDATE usuarios
-        SET nombre = ?, ap_paterno = ?, ap_materno = ?, correo = ?, usuario = ?, id_rol = ?
-        WHERE id_usuario = ?`, 
+         SET nombre = ?, ap_paterno = ?, ap_materno = ?, correo = ?, usuario = ?, id_rol = ?
+         WHERE id_usuario = ?`, 
         [nombre, ap_paterno, ap_materno, correo, usuario, id_rol, id]
     )
     return result.affectedRows
 }
 
-// DELETE
+// Eliminar usuario
 export const deleteUsuario = async(id) => {
     const [result] = await db.query(
         'DELETE FROM usuarios WHERE id_usuario = ?', [id]

@@ -25,19 +25,18 @@ export const getUsuarioById = async(req, res) => {
 
 export const createUsuario = async(req, res) => {
     try {
-        const { nombre, ap_paterno, correo, usuario, password, id_rol } = req.body
+        const { nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol } = req.body
 
-        // Validaciones básicas
-        if (!nombre || !correo || !usuario || !password || !id_rol) {
-            return res.status(400).json({ message: 'Faltan campos obligatorios' })
+        // Validación de campos obligatorios según tu SQL
+        if (!nombre || !ap_paterno || !ap_materno || !correo || !usuario || !password || !id_rol) {
+            return res.status(400).json({ message: 'Todos los campos son obligatorios' })
         }
 
         const nuevo = await usuarioModelo.createUsuario(req.body)
         res.status(201).json(nuevo)
     } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ message: 'El correo o nombre de usuario ya existe' })
-        }
+        if (error.code === 'ER_DUP_ENTRY') 
+            return res.status(409).json({ message: 'El correo o usuario ya están registrados' })
         res.status(500).json({ message: error.message })
     }
 }
@@ -45,16 +44,11 @@ export const createUsuario = async(req, res) => {
 export const updateUsuario = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
-        if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
-
         const afectados = await usuarioModelo.updateUsuario(id, req.body)
         if (afectados === 0) return res.status(404).json({ message: 'Usuario no encontrado' })
 
         res.status(200).json({ message: 'Usuario actualizado correctamente' })
     } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ message: 'El correo o nombre de usuario ya está en uso' })
-        }
         res.status(500).json({ message: error.message })
     }
 }
@@ -62,17 +56,14 @@ export const updateUsuario = async(req, res) => {
 export const deleteUsuario = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
-        if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
-
         const afectados = await usuarioModelo.deleteUsuario(id)
         if (afectados === 0) return res.status(404).json({ message: 'Usuario no encontrado' })
 
         res.status(200).json({ message: 'Usuario eliminado correctamente' })
     } catch (error) {
         // Error 1451: El usuario tiene registros en auditoría o solicitudes
-        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-            return res.status(409).json({ message: 'No se puede eliminar, el usuario tiene historial activo' })
-        }
+        if (error.code === 'ER_ROW_IS_REFERENCED_2')
+            return res.status(409).json({ message: 'No se puede eliminar: el usuario tiene historial o solicitudes asociadas' })
         res.status(500).json({ message: error.message })
     }
 }
