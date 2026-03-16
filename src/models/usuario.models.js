@@ -24,6 +24,14 @@ export const getUsuarioById = async(id) => {
     `, [id])
     return rows[0]
 }
+// Actualizar solo la contraseña
+export const updatePassword = async(id, nuevaPasswordCifrada) => {
+    const [result] = await db.query(
+        `UPDATE usuarios SET password = ? WHERE id_usuario = ?`, 
+        [nuevaPasswordCifrada, id]
+    )
+    return result.affectedRows
+}
 
 // Crear nuevo usuario (Nota: password debe venir ya cifrada)
 export const createUsuario = async({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
