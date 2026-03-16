@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken'
 // ── VERIFICAR TOKEN ───────────────────────────────────────────────
 // Úsalo en cualquier ruta que requiera sesión activa
 export const verificarToken = (req, res, next) => {
-    const authHeader = req.headers['authorization']
-
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'Acceso denegado. Token requerido.' })
     }
