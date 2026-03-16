@@ -10,6 +10,7 @@ import marcaRoutes from './src/routes/marca.routes.js'
 import authRoutes from './src/routes/auth.routes.js'
 import usuarioRoutes from './src/routes/usuarios.routes.js'
 import usuarioRoutesPublic from './src/routes/usuario.routes.js'
+import ajustesRoutes from './src/routes/ajustes.routes.js' // Asegúrate de importar la conexión a la base de datos
 
 dotenv.config()
 
@@ -37,7 +38,7 @@ app.use('/api/marcas', marcaRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/usuarios', usuarioRoutes)
 app.use('/api/usuario', usuarioRoutesPublic) // Rutas públicas para usuarios (registro, login, etc.)
-
+app.use('/api/ajustes', ajustesRoutes) // Rutas para ajustes
 // Solo levantar servidor local si no estamos en Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000
