@@ -1,4 +1,5 @@
-import * as usuarioModel from '../models/usuarios.models.js'
+// Agrega un comentario vacío al final de la línea 1
+import * as usuarioModel from '../models/usuarios.models.js' // fix
 import bcrypt from 'bcryptjs'
 
 // GET /api/usuarios/perfil — requiere token
