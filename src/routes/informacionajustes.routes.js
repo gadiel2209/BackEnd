@@ -3,10 +3,10 @@ import * as ctrl from '../controllers/informacion.controllers.js'
 
 const router = Router()
 
-// GET para mostrar todo
+// Obtener todos los textos institucionales
 router.get('/', ctrl.getInfoInstitucional)
 
-// PUT para editar cada sección por su ID
+// Rutas individuales para edición
 router.put('/mision/:id', ctrl.updateMision)
 router.put('/vision/:id', ctrl.updateVision)
 router.put('/quienes/:id', ctrl.updateQuienes)
