@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import * as ctrl from './controllers/equipos.controllers.js'
+import * as ctrl from '../controllers/equipos.controllers.js'
 
 const router = Router()
 

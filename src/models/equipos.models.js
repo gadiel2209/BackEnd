@@ -1,4 +1,4 @@
-import db from './config/db.js'
+import db from '../config/db.js'
 
 // GET ALL - con nombre de categoría
 export const getAllEquipos = async() => {

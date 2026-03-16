@@ -1,4 +1,4 @@
-import * as equipoModelo from './models/equipos.models.js'
+import * as equipoModelo from '../models/equipos.models.js'
 
 const ESTADOS_VALIDOS = ['disponible', 'prestado', 'dañado', 'mantenimiento']
 
