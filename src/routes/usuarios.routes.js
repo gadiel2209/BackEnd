@@ -1,13 +1,14 @@
 import { Router } from 'express'
-import { getPerfil, cambiarPassword, getTotalUsuarios } from '../controllers/usuarios.controllers.js'
+// Importa todas las funciones y las agrupa en el objeto userCtrl
+import * as userCtrl from '../controllers/usuarios.controllers.js' 
 import { verificarToken } from '../middlewares/auth.middleware.js'
 
 const router = Router()
 
-router.get('/', verificarToken, userCtrl.getUsuarios);
-router.get('/total',    getTotalUsuarios)           // público — estadísticas
-router.get('/perfil',   verificarToken, getPerfil)  // protegido
-router.put('/password', verificarToken, cambiarPassword) // protegido
-
+// Ahora userCtrl ya está definido y esto no dará error
+router.get('/', verificarToken, userCtrl.getUsuarios) 
+router.get('/total', userCtrl.getTotalUsuarios)
+router.get('/perfil', verificarToken, userCtrl.getPerfil)
+router.put('/password', verificarToken, userCtrl.cambiarPassword)
 
 export default router
