@@ -2,6 +2,20 @@
 import * as usuarioModel from '../models/usuarios.models.js' // fix
 import bcrypt from 'bcryptjs'
 
+// Obtener todos los usuarios (para que /api/usuarios funcione)
+export const getUsuarios = async (req, res) => {
+    try {
+        const usuarios = await usuarioModel.getAllUsuarios();
+        res.status(200).json(usuarios);
+    } catch (error) {
+        // Esto ayudará a ver el error real en los logs de Vercel
+        res.status(500).json({ 
+            message: "Error al obtener usuarios", 
+            error: error.message 
+        });
+    }
+};
+
 // GET /api/usuarios/perfil — requiere token
 export const getPerfil = async (req, res) => {
     try {
