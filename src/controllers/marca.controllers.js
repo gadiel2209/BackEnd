@@ -28,3 +28,25 @@ export const deleteMarca = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getMarcaById = async(req, res) => {
+    try {
+        const id = req.params.id;
+        const marca = await marcaModelo.getMarcaById(id);
+        if (!marca) return res.status(404).json({ message: "No encontrado" });
+        res.json(marca);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const updateMarca = async(req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre } = req.body;
+        await marcaModelo.updateMarca(id, nombre);
+        res.json({ message: "Actualizado correctamente" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
