@@ -1,4 +1,4 @@
-import * as usuarioModel from '../models/usuario.model.js'
+import * as usuarioModel from '../models/usuario.models.js'
 import bcrypt from 'bcryptjs'
 
 // GET /api/usuarios/perfil — requiere token
