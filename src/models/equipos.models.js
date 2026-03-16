@@ -1,7 +1,7 @@
-import db from '../config/db.js'
+import db from './config/db.js'
 
 // GET ALL - con nombre de categoría
-export const getAllEquipos = async () => {
+export const getAllEquipos = async() => {
     const [rows] = await db.query(`
         SELECT e.id_equipo, e.nombre, e.descripcion, e.ruta_imagen,
             e.codigo_qr, e.estado, e.fecha_registro,
@@ -13,7 +13,7 @@ export const getAllEquipos = async () => {
 }
 
 // GET BY ID
-export const getEquipoById = async (id) => {
+export const getEquipoById = async(id) => {
     const [rows] = await db.query(`
         SELECT e.id_equipo, e.nombre, e.descripcion, e.ruta_imagen,
             e.codigo_qr, e.estado, e.fecha_registro,
@@ -26,7 +26,7 @@ export const getEquipoById = async (id) => {
 }
 
 // GET BY ESTADO - filtrar por disponible / prestado / dañado / mantenimiento
-export const getEquiposByEstado = async (estado) => {
+export const getEquiposByEstado = async(estado) => {
     const [rows] = await db.query(`
         SELECT e.id_equipo, e.nombre, e.descripcion, e.ruta_imagen,
             e.codigo_qr, e.estado, e.fecha_registro,
@@ -39,38 +39,35 @@ export const getEquiposByEstado = async (estado) => {
 }
 
 // CREATE
-export const createEquipo = async ({ nombre, descripcion, ruta_imagen, codigo_qr, id_categoria, estado }) => {
+export const createEquipo = async({ nombre, descripcion, ruta_imagen, codigo_qr, id_categoria, estado }) => {
     const [result] = await db.query(
         `INSERT INTO equipos (nombre, descripcion, ruta_imagen, codigo_qr, id_categoria, estado)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-        [
+        VALUES (?, ?, ?, ?, ?, ?)`, [
             nombre,
-            descripcion  || null,
-            ruta_imagen  || null,
-            codigo_qr    || null,
+            descripcion || null,
+            ruta_imagen || null,
+            codigo_qr || null,
             id_categoria,
-            estado       || 'disponible'
+            estado || 'disponible'
         ]
     )
     return { id: result.insertId, nombre, descripcion, ruta_imagen, codigo_qr, id_categoria, estado: estado || 'disponible' }
 }
 
 // UPDATE
-export const updateEquipo = async (id, { nombre, descripcion, ruta_imagen, codigo_qr, id_categoria, estado }) => {
+export const updateEquipo = async(id, { nombre, descripcion, ruta_imagen, codigo_qr, id_categoria, estado }) => {
     const [result] = await db.query(
         `UPDATE equipos
         SET nombre = ?, descripcion = ?, ruta_imagen = ?, codigo_qr = ?, id_categoria = ?, estado = ?
-        WHERE id_equipo = ?`,
-        [nombre, descripcion || null, ruta_imagen || null, codigo_qr || null, id_categoria, estado, id]
+        WHERE id_equipo = ?`, [nombre, descripcion || null, ruta_imagen || null, codigo_qr || null, id_categoria, estado, id]
     )
     return result.affectedRows
 }
 
 // DELETE
-export const deleteEquipo = async (id) => {
+export const deleteEquipo = async(id) => {
     const [result] = await db.query(
-        'DELETE FROM equipos WHERE id_equipo = ?',
-        [id]
+        'DELETE FROM equipos WHERE id_equipo = ?', [id]
     )
     return result.affectedRows
 }

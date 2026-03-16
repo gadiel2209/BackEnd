@@ -1,9 +1,9 @@
-import * as equipoModelo from '../models/equipos.models.js'
+import * as equipoModelo from './models/equipos.models.js'
 
 const ESTADOS_VALIDOS = ['disponible', 'prestado', 'dañado', 'mantenimiento']
 
 // GET ALL
-export const getAllEquipos = async (req, res) => {
+export const getAllEquipos = async(req, res) => {
     try {
         const equipos = await equipoModelo.getAllEquipos()
         res.status(200).json(equipos)
@@ -13,7 +13,7 @@ export const getAllEquipos = async (req, res) => {
 }
 
 // GET BY ID
-export const getEquipoById = async (req, res) => {
+export const getEquipoById = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
         if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
@@ -28,7 +28,7 @@ export const getEquipoById = async (req, res) => {
 }
 
 // GET BY ESTADO  →  GET /equipos/estado/:estado
-export const getEquiposByEstado = async (req, res) => {
+export const getEquiposByEstado = async(req, res) => {
     try {
         const { estado } = req.params
         if (!ESTADOS_VALIDOS.includes(estado))
@@ -42,12 +42,12 @@ export const getEquiposByEstado = async (req, res) => {
 }
 
 // CREATE
-export const createEquipo = async (req, res) => {
+export const createEquipo = async(req, res) => {
     try {
         const { nombre, id_categoria, estado } = req.body
 
-        if (!nombre)        return res.status(400).json({ message: 'El campo nombre es requerido' })
-        if (!id_categoria)  return res.status(400).json({ message: 'El campo id_categoria es requerido' })
+        if (!nombre) return res.status(400).json({ message: 'El campo nombre es requerido' })
+        if (!id_categoria) return res.status(400).json({ message: 'El campo id_categoria es requerido' })
         if (estado && !ESTADOS_VALIDOS.includes(estado))
             return res.status(400).json({ message: `Estado inválido. Use: ${ESTADOS_VALIDOS.join(', ')}` })
 
@@ -62,15 +62,15 @@ export const createEquipo = async (req, res) => {
 }
 
 // UPDATE
-export const updateEquipo = async (req, res) => {
+export const updateEquipo = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
         if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
 
         const { nombre, id_categoria, estado } = req.body
 
-        if (!nombre)        return res.status(400).json({ message: 'El campo nombre es requerido' })
-        if (!id_categoria)  return res.status(400).json({ message: 'El campo id_categoria es requerido' })
+        if (!nombre) return res.status(400).json({ message: 'El campo nombre es requerido' })
+        if (!id_categoria) return res.status(400).json({ message: 'El campo id_categoria es requerido' })
         if (estado && !ESTADOS_VALIDOS.includes(estado))
             return res.status(400).json({ message: `Estado inválido. Use: ${ESTADOS_VALIDOS.join(', ')}` })
 
@@ -86,7 +86,7 @@ export const updateEquipo = async (req, res) => {
 }
 
 // DELETE
-export const deleteEquipo = async (req, res) => {
+export const deleteEquipo = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
         if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
