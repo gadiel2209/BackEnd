@@ -97,3 +97,12 @@ export const marcarDevuelta = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 }
+
+export const getDashboardStats = async (req, res) => {
+    try {
+        const stats = await solicitudModelo.getStatsGlobales();
+        res.status(200).json(stats);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
