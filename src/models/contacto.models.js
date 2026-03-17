@@ -1,18 +1,12 @@
-const db = require('../config/db'); // Tu conexión a la base de datos
+import db from '../config/db.js'; // Importa tu conexión
 
 const Contacto = {
     create: (nuevoContacto, result) => {
         const query = "INSERT INTO contacto (nombre, correo, asunto, mensaje) VALUES (?, ?, ?, ?)";
-        const values = [
-            nuevoContacto.nombre, 
-            nuevoContacto.correo, 
-            nuevoContacto.asunto, 
-            nuevoContacto.mensaje
-        ];
+        const values = [nuevoContacto.nombre, nuevoContacto.correo, nuevoContacto.asunto, nuevoContacto.mensaje];
 
         db.query(query, values, (err, res) => {
             if (err) {
-                console.error("Error al insertar:", err);
                 result(err, null);
                 return;
             }
@@ -21,4 +15,4 @@ const Contacto = {
     }
 };
 
-module.exports = Contacto;
+export default Contacto; // Exportación por defecto

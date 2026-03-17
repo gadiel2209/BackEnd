@@ -1,37 +1,31 @@
-const Contacto = require('../models/contacto.models');
+// USA IMPORT EN LUGAR DE REQUIRE
+import Contacto from '../models/contacto.models.js'; 
 
+// Exporta la función directamente
 export const enviarReporte = (req, res) => {
-    // Validar que los campos obligatorios lleguen en el body
-    const { nombre, correo, mensaje } = req.body;
+    const { nombre, correo, asunto, mensaje } = req.body;
 
     if (!nombre || !correo || !mensaje) {
-        return res.status(400).send({
-            message: "Nombre, correo y mensaje son campos obligatorios."
+        return res.status(400).json({
+            message: "Nombre, correo y mensaje son obligatorios."
         });
     }
 
-    // Crear el objeto con los datos del reporte/sugerencia
     const nuevoContacto = {
-        nombre: nombre,
-        correo: correo,
-        asunto: req.body.asunto || "Sin asunto",
-        mensaje: mensaje
+        nombre,
+        correo,
+        asunto: asunto || "Sin asunto",
+        mensaje
     };
 
-    // Guardar en la base de datos
     Contacto.create(nuevoContacto, (err, data) => {
         if (err) {
-            res.status(500).send({
-                message: "Ocurrió un error al procesar tu reporte."
-            });
+            res.status(500).json({ message: "Error al guardar el reporte" });
         } else {
-            res.status(201).send({
-                message: "¡Reporte enviado con éxito!",
+            res.status(201).json({
+                message: "¡Reporte enviado!",
                 data: data
             });
         }
     });
-
-    res.status(201).json({ message: "Reporte recibido" });
 };
-export default { enviarReporte };
