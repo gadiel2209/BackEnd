@@ -1,6 +1,6 @@
-const Contacto = require('../models/contacto.model');
+const Contacto = require('../models/contacto.models');
 
-const enviarReporte = (req, res) => {
+export const enviarReporte = (req, res) => {
     // Validar que los campos obligatorios lleguen en el body
     const { nombre, correo, mensaje } = req.body;
 
@@ -31,5 +31,7 @@ const enviarReporte = (req, res) => {
             });
         }
     });
+
+    res.status(201).json({ message: "Reporte recibido" });
 };
 export default { enviarReporte };

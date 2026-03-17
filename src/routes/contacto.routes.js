@@ -1,9 +1,10 @@
 import express from 'express';
+// Importamos el controlador usando llaves si es una exportación nombrada
+import { enviarReporte } from '../controllers/contacto.controllers.js';
+
 const router = express.Router();
-import contactoController from '../controllers/contacto.controller.js';
 
-// Tu ruta
-router.post('/', contactoController.enviarReporte);
+router.post('/', enviarReporte);
 
-// ESTA ES LA LÍNEA QUE FALTA O ESTÁ MAL:
+// ESTA LÍNEA ES LA QUE SOLUCIONA EL ERROR:
 export default router;
