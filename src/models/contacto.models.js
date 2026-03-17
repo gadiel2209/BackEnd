@@ -1,18 +1,19 @@
-import db from '../config/db.js'; // Importa tu conexión
+import db from '../config/db.js';
 
 const Contacto = {
-    create: (nuevoContacto, result) => {
+    create: async (nuevoContacto) => {
         const query = "INSERT INTO contacto (nombre, correo, asunto, mensaje) VALUES (?, ?, ?, ?)";
-        const values = [nuevoContacto.nombre, nuevoContacto.correo, nuevoContacto.asunto, nuevoContacto.mensaje];
+        const values = [
+            nuevoContacto.nombre, 
+            nuevoContacto.correo, 
+            nuevoContacto.asunto, 
+            nuevoContacto.mensaje
+        ];
 
-        db.query(query, values, (err, res) => {
-            if (err) {
-                result(err, null);
-                return;
-            }
-            result(null, { id: res.insertId, ...nuevoContacto });
-        });
+        // Usamos await porque la conexión es /promise
+        const [result] = await db.query(query, values);
+        return result;
     }
 };
 
-export default Contacto; // Exportación por defecto
+export default Contacto;
