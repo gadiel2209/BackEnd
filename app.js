@@ -11,6 +11,7 @@ import authRoutes from './src/routes/auth.routes.js'
 import usuarioRoutes from './src/routes/usuarios.routes.js'
 import usuarioRoutesPublic from './src/routes/usuario.routes.js'
 import informacioRoutes from './src/routes/informacion.routes.js' // Asegúrate de importar la conexión a la base de datos
+import contactoRoutes from './src/routes/contacto.routes.js' // Importa las rutas de contacto
 
 dotenv.config()
 
@@ -39,6 +40,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/usuarios', usuarioRoutes)
 app.use('/api/usuario', usuarioRoutesPublic) // Rutas públicas para usuarios (registro, login, etc.)
 app.use('/api/informacion', informacioRoutes) // Rutas para información institucional
+app.use('/api/contacto', contactoRoutes) // Rutas para contacto
 // Solo levantar servidor local si no estamos en Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000
