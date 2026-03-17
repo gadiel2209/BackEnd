@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const contactoController = require('../controllers/contacto.controller');
+import contactoController from '../controllers/contacto.controller.js';
 
-// Ruta para enviar el formulario de contacto
-// Se accederá mediante POST a: /api/contacto
+// Tu ruta
 router.post('/', contactoController.enviarReporte);
 
-module.exports = router;
+// ESTA ES LA LÍNEA QUE FALTA O ESTÁ MAL:
+export default router;
