@@ -29,8 +29,6 @@ export const getStatsByUsuario = async (id_usuario) => {
     return rows[0]; // Retornamos solo el primer objeto con los conteos
 }
 
-import db from '../config/db.js';
-
 // 1. Registrar Solicitud: Usa el procedimiento 'RegistrarSolicitud'
 // Este procedimiento ya verifica internamente si el equipo está 'disponible'
 export const registrarSolicitud = async (id_usuario, id_equipo) => {
