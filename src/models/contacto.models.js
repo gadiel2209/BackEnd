@@ -10,7 +10,7 @@ const Contacto = {
             nuevoContacto.mensaje
         ];
 
-        // Usamos await porque la conexión es /promise
+        // En mysql2/promise, query devuelve un array [filas, campos]
         const [result] = await db.query(query, values);
         return result;
     }

@@ -4,26 +4,21 @@ export const enviarReporte = async (req, res) => {
     const { nombre, correo, asunto, mensaje } = req.body;
 
     if (!nombre || !correo || !mensaje) {
-        return res.status(400).json({ message: "Nombre, correo y mensaje son obligatorios." });
+        return res.status(400).json({ message: "Faltan datos obligatorios" });
     }
 
     try {
-        const nuevoContacto = {
-            nombre,
-            correo,
-            asunto: asunto || "Sin asunto",
-            mensaje
-        };
-
-        // Esperamos la ejecución del modelo
-        const data = await Contacto.create(nuevoContacto);
+        const nuevoContacto = { nombre, correo, asunto, mensaje };
+        
+        // Esperamos a que la DB responda
+        const result = await Contacto.create(nuevoContacto);
 
         res.status(201).json({
             message: "¡Reporte enviado!",
-            id: data.insertId
+            id: result.insertId
         });
     } catch (error) {
-        console.error("Error en BD:", error);
-        res.status(500).json({ message: "Error al guardar el reporte en la base de datos" });
+        console.error("Error detallado:", error);
+        res.status(500).json({ message: "Error al guardar en la base de datos" });
     }
 };
