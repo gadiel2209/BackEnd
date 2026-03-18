@@ -90,3 +90,16 @@ export const getAllSolicitudes = async () => {
     `);
     return rows;
 };
+
+
+export const getSolicitudById = async (id_solicitud) => {
+    const [rows] = await db.query(`
+        SELECT s.*, u.nombre AS usuario_nombre, u.usuario AS matricula, 
+               e.nombre AS equipo_nombre, e.ruta_imagen
+        FROM solicitudes s
+        INNER JOIN usuarios u ON s.id_usuario = u.id_usuario
+        INNER JOIN equipos e ON s.id_equipo = e.id_equipo
+        WHERE s.id_solicitud = ?
+    `, [id_solicitud]);
+    return rows[0];
+};
