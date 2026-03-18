@@ -6,3 +6,10 @@ export const getAllCategorias = async () => {
 }
 
 
+export const createAjuste = async ({ clave, valor, descripcion }) => {
+    const [result] = await db.query(
+        'INSERT INTO ajustes_globales (clave, valor, descripcion) VALUES (?, ?, ?)',
+        [clave, valor, descripcion || null]
+    )
+    return { id: result.insertId, clave, valor, descripcion }
+}

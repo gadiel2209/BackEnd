@@ -3,10 +3,8 @@ import * as ctrl from '../controllers/ajustes.controllers.js'
 
 const router = Router()
 
-// GET /api/ajustes -> Para pintar el Footer y la página de contacto
-router.get('/', ctrl.getAjustes)
-
-// PUT /api/ajustes/:clave -> Para que el admin edite los datos
-router.put('/:clave', ctrl.updateAjuste)
+router.get('/', ctrl.getAjustes) // Para leer (Footer)
+router.post('/', ctrl.createAjuste) // <-- NUEVA: Para agregar datos
+router.put('/:clave', ctrl.updateAjuste) // Para editar datos existentes
 
 export default router
