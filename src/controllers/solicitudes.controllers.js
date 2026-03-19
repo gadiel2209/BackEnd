@@ -59,13 +59,13 @@ export const registrarSolicitud = async (req, res) => {
 // En tu solicitudes.controllers.js
 export const aprobarSolicitud = async (req, res) => {
     try {
-        const id_solicitud = parseInt(req.params.id);
-        const { id_admin } = req.body;
-        if (isNaN(id_solicitud) || !id_admin) 
-            return res.status(400).json({ message: 'Datos inválidos o ID admin faltante' });
+        const { id } = req.params;      // ID de la solicitud (ej. 17)
+        const { id_admin } = req.body;  // ID del administrador (ej. 5)
 
-        await solicitudModelo.aprobarSolicitud(id_solicitud, id_admin);
-        res.status(200).json({ message: 'Solicitud aprobada con éxito' });
+        // Llamar al modelo que ejecuta el Procedimiento Almacenado
+        await solicitudModelo.aprobarSolicitud(id, id_admin);
+        
+        res.json({ message: "Solicitud procesada con éxito" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
