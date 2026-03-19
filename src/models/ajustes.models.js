@@ -20,3 +20,11 @@ export const updateAjuste = async (clave, valor) => {
     )
     return result.affectedRows
 }
+// Añade esto a tu archivo de modelos
+export const createAjuste = async ({ clave, valor, descripcion }) => {
+    const [result] = await db.query(
+        'INSERT INTO ajustes_globales (clave, valor, descripcion) VALUES (?, ?, ?)',
+        [clave, valor, descripcion]
+    );
+    return result; 
+};
