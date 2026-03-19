@@ -59,18 +59,21 @@ export const registrarSolicitud = async (req, res) => {
 // En tu solicitudes.controllers.js
 export const aprobarSolicitud = async (req, res) => {
     try {
-        const { id } = req.params;      // ID de la solicitud (ej. 17)
-        const { id_admin } = req.body;  // ID del administrador (ej. 5)
+        const id_solicitud = req.params.id;
+        const { id_admin } = req.body; // Aquí atrapamos el 5 que mandó el front
 
-        // Llamar al modelo que ejecuta el Procedimiento Almacenado
-        await solicitudModelo.aprobarSolicitud(id, id_admin);
+        if (!id_admin) {
+            return res.status(400).json({ message: "ID de administrador requerido" });
+        }
+
+        // Llamamos al modelo que ejecuta el CALL AprobarSolicitud
+        await solicitudModelo.aprobarSolicitud(id_solicitud, id_admin);
         
-        res.json({ message: "Solicitud procesada con éxito" });
+        res.status(200).json({ message: "Solicitud aprobada correctamente" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};
-
+}
 export const rechazarSolicitud = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
