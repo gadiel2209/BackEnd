@@ -38,16 +38,19 @@ export const registrarSolicitud = async (id_usuario, id_equipo) => {
 
 // 2. Aprobar Solicitud: Usa el procedimiento 'AprobarSolicitud'
 // Esto dispara automáticamente el cambio de estado del equipo a 'prestado' y crea la auditoría
-// En tu modelo de solicitudes
-export const aprobarSolicitud = async (id) => {
-    // Solo enviamos un signo de interrogación para el procedimiento
-    return await db.query('CALL AprobarSolicitud(?)', [id]);
+export const aprobarSolicitud = async (id_solicitud, id_admin) => {
+    await db.query('CALL AprobarSolicitud(?, ?)', [id_solicitud, id_admin]);
 };
 
+// 3. Rechazar Solicitud: Usa el procedimiento 'RechazarSolicitud'
+// Inserta el motivo en la tabla historial y registra la auditoría
 export const rechazarSolicitud = async (id_solicitud, id_admin, motivo) => {
     await db.query('CALL RechazarSolicitud(?, ?, ?)', [id_solicitud, id_admin, motivo]);
 };
 
+// 4. Marcar Devuelta: Usa el procedimiento 'MarcarDevuelta'
+// Nota: Al ejecutarse, se activa tu TRIGGER 'ActualizarEquipoDevuelto', 
+// el cual pone el equipo en 'disponible' automáticamente.
 export const marcarDevuelta = async (id_solicitud, id_admin) => {
     await db.query('CALL MarcarDevuelta(?, ?)', [id_solicitud, id_admin]);
 };

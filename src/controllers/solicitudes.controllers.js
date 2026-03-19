@@ -2,12 +2,12 @@ import * as solicitudModelo from '../models/solicitudes.models.js'
 
 export const getAllSolicitudes = async (req, res) => {
     try {
-        const solicitudes = await solicitudModelo.getAllSolicitudes();
-        res.status(200).json(solicitudes);
+        const solicitudes = await solicitudModelo.getAllSolicitudes()
+        res.status(200).json(solicitudes)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message })
     }
-};
+}
 
 export const getSolicitudById = async (req, res) => {
     try {
@@ -56,19 +56,20 @@ export const registrarSolicitud = async (req, res) => {
     }
 }
 
-// En tu solicitudes.controllers.js
 export const aprobarSolicitud = async (req, res) => {
     try {
-        const { id } = req.params; // Solo el ID de la solicitud de la URL
-        
-        // Llamas al modelo pasando solo el ID
-        await solicitudModelo.aprobarSolicitud(id); 
-        
-        res.status(200).json({ message: "Solicitud aprobada" });
+        const id = parseInt(req.params.id)
+        const { id_admin } = req.body
+        if (isNaN(id) || !id_admin)
+            return res.status(400).json({ message: 'Datos inválidos' })
+
+        await solicitudModelo.aprobarSolicitud(id, id_admin)
+        res.status(200).json({ message: 'Solicitud aprobada' })
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message })
     }
-};
+}
+
 export const rechazarSolicitud = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
@@ -87,18 +88,12 @@ export const marcarDevuelta = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
         const { id_admin } = req.body
-
-        // AGREGA ESTO TEMPORALMENTE
-        console.log('👉 id_solicitud:', id)
-        console.log('👉 id_admin:', id_admin)
-
         if (isNaN(id) || !id_admin)
             return res.status(400).json({ message: 'Datos inválidos' })
 
         await solicitudModelo.marcarDevuelta(id, id_admin)
         res.status(200).json({ message: 'Equipo marcado como devuelto' })
     } catch (error) {
-        console.error('❌ Error marcarDevuelta:', error) // AGREGA ESTO
         res.status(500).json({ message: error.message })
     }
 }
