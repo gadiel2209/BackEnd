@@ -59,14 +59,13 @@ export const registrarSolicitud = async (req, res) => {
 // En tu solicitudes.controllers.js
 export const aprobarSolicitud = async (req, res) => {
     try {
-        const { id } = req.params; // ID de la solicitud que viene de la URL
-
-        // Llamamos al modelo pasando solo un parámetro
+        const { id } = req.params; // Solo el ID de la solicitud de la URL
+        
+        // Llamas al modelo pasando solo el ID
         await solicitudModelo.aprobarSolicitud(id); 
         
-        res.status(200).json({ message: "Solicitud aprobada correctamente" });
+        res.status(200).json({ message: "Solicitud aprobada" });
     } catch (error) {
-        // Si sale el error de la imagen, es porque el SQL de arriba no se aplicó bien
         res.status(500).json({ message: error.message });
     }
 };
