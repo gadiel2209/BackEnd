@@ -38,8 +38,10 @@ export const registrarSolicitud = async (id_usuario, id_equipo) => {
 
 // 2. Aprobar Solicitud: Usa el procedimiento 'AprobarSolicitud'
 // Esto dispara automáticamente el cambio de estado del equipo a 'prestado' y crea la auditoría
-export const aprobarSolicitud = async (id_solicitud, id_admin) => {
-    await db.query('CALL AprobarSolicitud(?, ?)', [id_solicitud, id_admin]);
+// En tu modelo de solicitudes
+export const aprobarSolicitud = async (id) => {
+    // Solo enviamos un signo de interrogación para el procedimiento
+    return await db.query('CALL AprobarSolicitud(?)', [id]);
 };
 
 export const rechazarSolicitud = async (id_solicitud, id_admin, motivo) => {

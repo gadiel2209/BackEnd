@@ -59,14 +59,16 @@ export const registrarSolicitud = async (req, res) => {
 // En tu solicitudes.controllers.js
 export const aprobarSolicitud = async (req, res) => {
     try {
-        const { id } = req.params; // Este es el id_solicitud que viene del botón
+        // 1. Solo obtenemos el ID de la solicitud desde la URL (params)
+        const { id } = req.params; 
 
-        // Llamamos al modelo pasando SOLO el ID
+        // 2. Llamamos al modelo pasando ÚNICAMENTE el ID
+        // (Asegúrate de que tu modelo también reciba solo un parámetro ahora)
         await solicitudModelo.aprobarSolicitud(id); 
         
         res.json({ message: "Solicitud aprobada con éxito" });
     } catch (error) {
-        // Aquí es donde te salía el error de la captura
+        // Este catch es el que te está mandando el mensaje de "Cannot destructure..."
         res.status(500).json({ message: error.message });
     }
 };
