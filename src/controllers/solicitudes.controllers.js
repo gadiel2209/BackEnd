@@ -59,21 +59,17 @@ export const registrarSolicitud = async (req, res) => {
 // En tu solicitudes.controllers.js
 export const aprobarSolicitud = async (req, res) => {
     try {
-        const id_solicitud = req.params.id;
-        const { id_admin } = req.body; // Aquí atrapamos el 5 que mandó el front
+        const { id } = req.params; // Este es el id_solicitud que viene del botón
 
-        if (!id_admin) {
-            return res.status(400).json({ message: "ID de administrador requerido" });
-        }
-
-        // Llamamos al modelo que ejecuta el CALL AprobarSolicitud
-        await solicitudModelo.aprobarSolicitud(id_solicitud, id_admin);
+        // Llamamos al modelo pasando SOLO el ID
+        await solicitudModelo.aprobarSolicitud(id); 
         
-        res.status(200).json({ message: "Solicitud aprobada correctamente" });
+        res.json({ message: "Solicitud aprobada con éxito" });
     } catch (error) {
+        // Aquí es donde te salía el error de la captura
         res.status(500).json({ message: error.message });
     }
-}
+};
 export const rechazarSolicitud = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
