@@ -87,12 +87,18 @@ export const marcarDevuelta = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
         const { id_admin } = req.body
+
+        // AGREGA ESTO TEMPORALMENTE
+        console.log('👉 id_solicitud:', id)
+        console.log('👉 id_admin:', id_admin)
+
         if (isNaN(id) || !id_admin)
             return res.status(400).json({ message: 'Datos inválidos' })
 
         await solicitudModelo.marcarDevuelta(id, id_admin)
         res.status(200).json({ message: 'Equipo marcado como devuelto' })
     } catch (error) {
+        console.error('❌ Error marcarDevuelta:', error) // AGREGA ESTO
         res.status(500).json({ message: error.message })
     }
 }
