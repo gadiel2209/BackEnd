@@ -59,16 +59,14 @@ export const registrarSolicitud = async (req, res) => {
 // En tu solicitudes.controllers.js
 export const aprobarSolicitud = async (req, res) => {
     try {
-        // 1. Solo obtenemos el ID de la solicitud desde la URL (params)
-        const { id } = req.params; 
+        const { id } = req.params; // ID de la solicitud que viene de la URL
 
-        // 2. Llamamos al modelo pasando ÚNICAMENTE el ID
-        // (Asegúrate de que tu modelo también reciba solo un parámetro ahora)
+        // Llamamos al modelo pasando solo un parámetro
         await solicitudModelo.aprobarSolicitud(id); 
         
-        res.json({ message: "Solicitud aprobada con éxito" });
+        res.status(200).json({ message: "Solicitud aprobada correctamente" });
     } catch (error) {
-        // Este catch es el que te está mandando el mensaje de "Cannot destructure..."
+        // Si sale el error de la imagen, es porque el SQL de arriba no se aplicó bien
         res.status(500).json({ message: error.message });
     }
 };
