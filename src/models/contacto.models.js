@@ -16,4 +16,11 @@ const Contacto = {
     }
 };
 
+getAll: async () => {
+    const [rows] = await db.query(
+        'SELECT * FROM contacto ORDER BY fecha DESC'
+    );
+    return rows;
+}
+
 export default Contacto;

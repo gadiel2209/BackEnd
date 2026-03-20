@@ -5,6 +5,6 @@ import { enviarReporte } from '../controllers/contacto.controllers.js';
 const router = express.Router();
 
 router.post('/', enviarReporte);
-
+router.get('/', obtenerMensajes)
 // ESTA LÍNEA ES LA QUE SOLUCIONA EL ERROR:
 export default router;

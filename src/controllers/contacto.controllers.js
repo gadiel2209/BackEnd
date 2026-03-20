@@ -22,3 +22,12 @@ export const enviarReporte = async (req, res) => {
         res.status(500).json({ message: "Error al guardar en la base de datos" });
     }
 };
+
+export const obtenerMensajes = async (req, res) => {
+    try {
+        const mensajes = await Contacto.getAll();
+        res.status(200).json(mensajes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
