@@ -77,6 +77,7 @@ export const getSolicitudById = async (id_solicitud) => {
         SELECT s.*,
                u.nombre  AS usuario_nombre,
                u.usuario AS matricula,
+               u.correo  AS correo,
                e.nombre  AS equipo_nombre,
                e.ruta_imagen
         FROM solicitudes s
