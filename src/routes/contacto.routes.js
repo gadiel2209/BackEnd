@@ -1,10 +1,9 @@
 import express from 'express';
-// Importamos el controlador usando llaves si es una exportación nombrada
-import { enviarReporte } from '../controllers/contacto.controllers.js';
+import { enviarReporte, obtenerMensajes } from '../controllers/contacto.controllers.js';
 
 const router = express.Router();
 
 router.post('/', enviarReporte);
-router.get('/', obtenerMensajes)
-// ESTA LÍNEA ES LA QUE SOLUCIONA EL ERROR:
+router.get('/', obtenerMensajes);
+
 export default router;
