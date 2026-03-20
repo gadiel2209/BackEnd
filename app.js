@@ -19,17 +19,7 @@ dotenv.config()
 const app = express()
 
 // Cambia app.use(cors()) por esto:
-app.use(cors({
-    origin: [
-        'https://gadie12209.github.io',
-        'http://localhost:3000',
-        'http://localhost:5500',
-        'http://127.0.0.1:5500'
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}))
+app.use(cors());
 app.use(express.json())
 
 // Ruta de cortesía
