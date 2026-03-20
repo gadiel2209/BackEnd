@@ -2,9 +2,10 @@ import * as reportesModelo from '../models/reportes.models.js'
 
 export const getDashboardStats = async(req, res) => {
     try {
-        const stats = await reportesModelo.getResumenDashboard()
-        const populares = await reportesModelo.getEquiposMasPedidos()
-        res.status(200).json({ resumen: stats, top_equipos: populares })
+        const stats      = await reportesModelo.getResumenDashboard()
+        const populares  = await reportesModelo.getEquiposMasPedidos()
+        const porMes     = await reportesModelo.getSolicitudesPorMes()  // ← agrega esto
+        res.status(200).json({ resumen: stats, top_equipos: populares, por_mes: porMes })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
