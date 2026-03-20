@@ -13,14 +13,14 @@ const Contacto = {
         // En mysql2/promise, query devuelve un array [filas, campos]
         const [result] = await db.query(query, values);
         return result;
-    }
-};
+    },
 
-getAll: async () => {
+    getAll: async () => {
     const [rows] = await db.query(
         'SELECT * FROM contacto ORDER BY fecha DESC'
     );
     return rows;
 }
+};
 
 export default Contacto;
