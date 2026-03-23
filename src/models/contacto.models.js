@@ -12,13 +12,12 @@ const Contacto = {
         // USAMOS "AS" PARA PARECERSE A LO QUE PIDE TU JS
         const [rows] = await db.query(
             `SELECT 
-                id AS _id, 
+                id_contacto AS _id, 
                 nombre, 
                 correo, 
                 asunto, 
                 mensaje, 
-                fecha AS createdAt, 
-                leido 
+                fecha AS createdAt
              FROM contacto 
              ORDER BY fecha DESC`
         );
