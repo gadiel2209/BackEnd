@@ -22,13 +22,18 @@ export const obtenerMensajes = async (req, res) => {
     }
 };
 
-// Nueva función para eliminar
+// controllers/contacto.controllers.js
 export const borrarMensaje = async (req, res) => {
     try {
-        const { id } = req.params;
-        await Contacto.delete(id);
-        res.status(200).json({ message: "Mensaje eliminado con éxito" });
+        const { id } = req.params; // Captura el ID de la URL
+        const result = await Contacto.delete(id);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: "Mensaje eliminado" });
+        } else {
+            res.status(404).json({ message: "Mensaje no encontrado" });
+        }
     } catch (error) {
-        res.status(500).json({ message: "Error al eliminar" });
+        res.status(500).json({ message: "Error al eliminar el mensaje" });
     }
 };

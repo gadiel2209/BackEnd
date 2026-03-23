@@ -9,16 +9,14 @@ const Contacto = {
         return result;
     },
 
-    // Obtener todos para el Buzón (Cambiamos id por _id para tu frontend)
-    getAll: async () => {
-        // Seleccionamos 'id' como '_id' y 'fecha' como 'createdAt' para que coincida con tu JS
+   getAll: async () => {
+        // Usamos ALIAS (AS) para que MySQL devuelva los nombres que tu JS espera
         const [rows] = await db.query(
             'SELECT id AS _id, nombre, correo, asunto, mensaje, fecha AS createdAt FROM contacto ORDER BY fecha DESC'
         );
         return rows;
     },
 
-    // Eliminar mensaje (Para la función eliminarMensajeAPI)
     delete: async (id) => {
         const [result] = await db.query('DELETE FROM contacto WHERE id = ?', [id]);
         return result;
