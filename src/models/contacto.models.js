@@ -1,25 +1,33 @@
 import db from '../config/db.js';
 
 const Contacto = {
-    // Crear mensaje
-    create: async (nuevoContacto) => {
+    // Para el formulario de envío
+    create: async (nuevo) => {
         const query = "INSERT INTO contacto (nombre, correo, asunto, mensaje) VALUES (?, ?, ?, ?)";
-        const values = [nuevoContacto.nombre, nuevoContacto.correo, nuevoContacto.asunto, nuevoContacto.mensaje];
-        const [result] = await db.query(query, values);
+        const [result] = await db.query(query, [nuevo.nombre, nuevo.correo, nuevo.asunto, nuevo.mensaje]);
         return result;
     },
 
-   getAll: async () => {
-        // Usamos ALIAS (AS) para que MySQL devuelva los nombres que tu JS espera
+    // Para el Buzón Admin (Mapeo de nombres para tu JS)
+    getAll: async () => {
         const [rows] = await db.query(
-            'SELECT id AS _id, nombre, correo, asunto, mensaje, fecha AS createdAt FROM contacto ORDER BY fecha DESC'
+            `SELECT 
+                id AS _id, 
+                nombre, 
+                correo, 
+                asunto, 
+                mensaje, 
+                fecha AS createdAt, 
+                leido 
+             FROM contacto 
+             ORDER BY fecha DESC`
         );
         return rows;
     },
 
+    // Para el botón de eliminar
     delete: async (id) => {
-        const [result] = await db.query('DELETE FROM contacto WHERE id = ?', [id]);
-        return result;
+        return await db.query('DELETE FROM contacto WHERE id = ?', [id]);
     }
 };
 

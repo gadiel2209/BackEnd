@@ -3,8 +3,8 @@ import { enviarReporte, obtenerMensajes, borrarMensaje } from '../controllers/co
 
 const router = express.Router();
 
-router.post('/', enviarReporte);
 router.get('/', obtenerMensajes);
-router.delete('/:id', borrarMensaje); // Coincide con fetch(`${API}/contacto/${id}`, { method: 'DELETE' })
+router.post('/', enviarReporte);
+router.delete('/:id', borrarMensaje); // Importante para eliminarMensajeAPI(id)
 
 export default router;
