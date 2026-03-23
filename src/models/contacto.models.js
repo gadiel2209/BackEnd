@@ -8,8 +8,8 @@ const Contacto = {
         return result;
     },
 
-    // Para el Buzón Admin (Mapeo de nombres para tu JS)
-    getAll: async () => {
+   getAll: async () => {
+        // USAMOS "AS" PARA PARECERSE A LO QUE PIDE TU JS
         const [rows] = await db.query(
             `SELECT 
                 id AS _id, 
@@ -25,7 +25,6 @@ const Contacto = {
         return rows;
     },
 
-    // Para el botón de eliminar
     delete: async (id) => {
         return await db.query('DELETE FROM contacto WHERE id = ?', [id]);
     }
