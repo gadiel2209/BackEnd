@@ -1,10 +1,11 @@
 import express from 'express';
+// Los nombres dentro de {} deben ser iguales a los del controlador
 import { enviarReporte, obtenerMensajes, borrarMensaje } from '../controllers/contacto.controllers.js';
 
 const router = express.Router();
 
-router.get('/', obtenerMensajes);
 router.post('/', enviarReporte);
-router.delete('/:id', borrarMensaje); // Importante para eliminarMensajeAPI(id)
+router.get('/', obtenerMensajes);
+router.delete('/:id', borrarMensaje);
 
 export default router;
