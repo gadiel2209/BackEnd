@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import * as usuarioModel from '../models/usuarios.models.js';
+import db from '../config/db.js'; 
 
 export const register = async (req, res) => {
     try {
@@ -78,3 +79,61 @@ export const login = async (req, res) => {
         res.status(500).json({ error: 'Error en el proceso de login' });
     }
 };
+
+// ── ENVIAR CÓDIGO ─────────────────────────────────────────────────
+export const enviarCodigo = async (req, res) => {
+    const { correo } = req.body
+    if (!correo) return res.status(400).json({ message: 'Correo requerido' })
+
+    try {
+        // Generar código de 6 dígitos
+        const codigo = Math.floor(100000 + Math.random() * 900000).toString()
+
+        // Expiración: 10 minutos
+        const fecha_expiracion = new Date(Date.now() + 10 * 60 * 1000)
+            .toISOString().slice(0, 19).replace('T', ' ')
+
+        // Eliminar códigos anteriores del mismo correo
+        await db.query('DELETE FROM verificacion_correo WHERE correo = ?', [correo])
+
+        // Insertar nuevo código
+        await db.query(
+            'INSERT INTO verificacion_correo (correo, codigo, fecha_expiracion) VALUES (?, ?, ?)',
+            [correo, codigo, fecha_expiracion]
+        )
+
+        // Devolver el código al frontend para que EmailJS lo envíe
+        res.status(200).json({ message: 'Código generado', codigo })
+
+    } catch (error) {
+        console.error('Error en enviarCodigo:', error)
+        res.status(500).json({ message: 'Error al generar código' })
+    }
+}
+
+// ── VERIFICAR CÓDIGO ──────────────────────────────────────────────
+export const verificarCodigo = async (req, res) => {
+    const { correo, codigo } = req.body
+    if (!correo || !codigo) return res.status(400).json({ message: 'Correo y código requeridos' })
+
+    try {
+        const [rows] = await db.query(
+            `SELECT * FROM verificacion_correo 
+            WHERE correo = ? AND codigo = ? AND fecha_expiracion > NOW()
+            ORDER BY id DESC LIMIT 1`,
+            [correo, codigo]
+        )
+
+        if (rows.length === 0)
+            return res.status(400).json({ message: 'Código incorrecto o expirado' })
+
+        // Eliminar código usado
+        await db.query('DELETE FROM verificacion_correo WHERE correo = ?', [correo])
+
+        res.status(200).json({ message: 'Código verificado correctamente', verificado: true })
+
+    } catch (error) {
+        console.error('Error en verificarCodigo:', error)
+        res.status(500).json({ message: 'Error al verificar código' })
+    }
+}
