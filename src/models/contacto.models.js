@@ -25,8 +25,9 @@ const Contacto = {
     },
 
     delete: async (id) => {
-        return await db.query('DELETE FROM contacto WHERE id = ?', [id]);
-    }
+    return await db.query('DELETE FROM contacto WHERE id_contacto = ?', [id]); // ✅
+}
+
 };
 
 export default Contacto;
