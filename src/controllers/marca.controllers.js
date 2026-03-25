@@ -40,11 +40,17 @@ export const getMarcaById = async(req, res) => {
     }
 };
 
+// En marca.controllers.js
 export const updateMarca = async(req, res) => {
     try {
-        const { id } = req.params;
-        const { nombre } = req.body;
-        await marcaModelo.updateMarca(id, nombre);
+        const { id } = req.params; // Esto saca el ID de la URL
+        const { nombre } = req.body; // Esto saca el nombre del formulario
+        
+        // Llamamos al modelo pasando id primero y luego nombre
+        const filasAfectadas = await marcaModelo.updateMarca(id, nombre);
+        
+        if (filasAfectadas === 0) return res.status(404).json({ message: "No se encontró la marca para actualizar" });
+        
         res.json({ message: "Actualizado correctamente" });
     } catch (error) {
         res.status(500).json({ error: error.message });
