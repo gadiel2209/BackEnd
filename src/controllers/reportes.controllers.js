@@ -7,6 +7,7 @@ export const getDashboardStats = async (req, res) => {
         const porMes = await reportesModelo.getSolicitudesPorMes()  // ← agrega esto
         res.status(200).json({ resumen: stats, top_equipos: populares, por_mes: porMes })
     } catch (error) {
+        console.error('Error dashboard:', error.message)  // ← y esto
         res.status(500).json({ message: error.message })
     }
 }
