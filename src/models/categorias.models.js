@@ -5,11 +5,23 @@ export const getAllCategorias = async () => {
     return rows
 }
 
+// Obtener una sola para el modo edición
+export const getCategoriaById = async (id) => {
+    const [rows] = await db.query('SELECT * FROM categorias WHERE id_categoria = ?', [id])
+    return rows[0]
+}
 
-export const createAjuste = async ({ clave, valor, descripcion }) => {
-    const [result] = await db.query(
-        'INSERT INTO ajustes_globales (clave, valor, descripcion) VALUES (?, ?, ?)',
-        [clave, valor, descripcion || null]
-    )
-    return { id: result.insertId, clave, valor, descripcion }
+export const createCategoria = async (nombre) => {
+    const [result] = await db.query('INSERT INTO categorias (nombre) VALUES (?)', [nombre])
+    return { id_categoria: result.insertId, nombre }
+}
+
+export const updateCategoria = async (id, nombre) => {
+    await db.query('UPDATE categorias SET nombre = ? WHERE id_categoria = ?', [nombre, id])
+    return { id_categoria: id, nombre }
+}
+
+export const deleteCategoria = async (id) => {
+    const [result] = await db.query('DELETE FROM categorias WHERE id_categoria = ?', [id])
+    return result
 }
