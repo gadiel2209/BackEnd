@@ -31,11 +31,10 @@ export const getReporteMovimientos = async(inicio, fin) => {
     return rows
 }
 
-// Función para crear un nuevo reporte de incidencia
 export const createReporte = async(id_solicitud, id_usuario_reporta, descripcion) => {
     const [result] = await db.query(
         `INSERT INTO reportes (id_solicitud, id_usuario_reporta, descripcion) 
-         VALUES (?, ?, ?)`, [id_solicitud, id_usuario_reporta, descripcion]
+        VALUES (?, ?, ?)`, [id_solicitud, id_usuario_reporta, descripcion]
     );
     return result.insertId;
 };
@@ -43,7 +42,7 @@ export const createReporte = async(id_solicitud, id_usuario_reporta, descripcion
 export const getAllReportes = async() => {
     const [rows] = await db.query(`
         SELECT r.id_reporte, r.descripcion, r.fecha_reporte, 
-               u.nombre AS administrador, e.nombre AS equipo
+            u.nombre AS administrador, e.nombre AS equipo
         FROM reportes r
         JOIN usuarios u ON r.id_usuario_reporta = u.id_usuario
         JOIN solicitudes s ON r.id_solicitud = s.id_solicitud
@@ -56,11 +55,11 @@ export const getAllReportes = async() => {
 export const getSolicitudesPorMes = async() => {
     const [rows] = await db.query(`
         SELECT 
-            GROUP BY DATE_FORMAT(fecha_solicitud, '%Y-%m'), DATE_FORMAT(fecha_solicitud, '%b %Y'),
+            DATE_FORMAT(fecha_solicitud, '%b %Y') AS mes,
             COUNT(*) AS total
         FROM solicitudes
         WHERE fecha_solicitud >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-        GROUP BY DATE_FORMAT(fecha_solicitud, '%Y-%m')
+        GROUP BY DATE_FORMAT(fecha_solicitud, '%Y-%m'), DATE_FORMAT(fecha_solicitud, '%b %Y')
         ORDER BY MIN(fecha_solicitud) ASC
     `)
     return rows
