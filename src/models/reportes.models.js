@@ -56,7 +56,7 @@ export const getAllReportes = async() => {
 export const getSolicitudesPorMes = async() => {
     const [rows] = await db.query(`
         SELECT 
-            DATE_FORMAT(fecha_solicitud, '%b %Y') AS mes,
+            GROUP BY DATE_FORMAT(fecha_solicitud, '%Y-%m'), DATE_FORMAT(fecha_solicitud, '%b %Y'),
             COUNT(*) AS total
         FROM solicitudes
         WHERE fecha_solicitud >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
