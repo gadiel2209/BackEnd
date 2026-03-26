@@ -10,19 +10,17 @@ import marcaRoutes from './src/routes/marca.routes.js'
 import authRoutes from './src/routes/auth.routes.js'
 import usuarioRoutes from './src/routes/usuarios.routes.js'
 import usuarioRoutesPublic from './src/routes/usuario.routes.js'
-import informacioRoutes from './src/routes/informacion.routes.js' // Asegúrate de importar la conexión a la base de datos
-import contactoRoutes from './src/routes/contacto.routes.js' // Importa las rutas de contacto
-import ajustesRoutes from './src/routes/ajustes.routes.js' // Importa las rutas de ajustes
+import informacioRoutes from './src/routes/informacion.routes.js' 
+import contactoRoutes from './src/routes/contacto.routes.js' 
+import ajustesRoutes from './src/routes/ajustes.routes.js' 
 
 dotenv.config()
 
 const app = express()
 
-// Cambia app.use(cors()) por esto:
 app.use(cors());
 app.use(express.json())
 
-// Ruta de cortesía
 app.get('/', (req, res) => {
     res.json({
         message: 'API de Préstamos funcionando correctamente',
@@ -39,11 +37,11 @@ app.use('/api/reportes', reporteRoutes)
 app.use('/api/marcas', marcaRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/usuarios', usuarioRoutes)
-app.use('/api/usuario', usuarioRoutesPublic) // Rutas públicas para usuarios (registro, login, etc.)
-app.use('/api/informacion', informacioRoutes) // Rutas para información institucional
-app.use('/api/contacto', contactoRoutes) // Rutas para contacto
-app.use('/api/ajustes', ajustesRoutes) // Rutas para ajustes globales
-// Solo levantar servidor local si no estamos en Vercel
+app.use('/api/usuario', usuarioRoutesPublic) 
+app.use('/api/informacion', informacioRoutes) 
+app.use('/api/contacto', contactoRoutes) 
+app.use('/api/ajustes', ajustesRoutes)
+
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000
     app.listen(PORT, () => {
