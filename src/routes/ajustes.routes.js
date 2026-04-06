@@ -8,11 +8,10 @@ import {
 } from '../controllers/ajustes.controllers.js';
 
 const router = Router();
-
-router.get('/ajustes', getAjustesPublicos);
-router.get('/ajustes/:clave', getAjuste);
-router.get('/admin/ajustes', getAjustesAdmin);
-router.post('/admin/ajustes', createAjuste);
-router.put('/admin/ajustes/:clave', updateAjuste);
+router.get('/', getAjustesPublicos);
+router.get('/:clave', getAjuste);
+router.get('/admin', getAjustesAdmin);
+router.post('/admin', createAjuste);
+router.put('/admin/:clave', updateAjuste);
 
 export default router;
