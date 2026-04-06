@@ -1,10 +1,18 @@
-import { Router } from 'express'
-import * as ctrl from '../controllers/ajustes.controllers.js'
+import { Router } from 'express';
+import { 
+    getAjustesPublicos, 
+    getAjustesAdmin, 
+    getAjuste,
+    createAjuste, 
+    updateAjuste 
+} from '../controllers/ajustes.controllers.js';
 
-const router = Router()
+const router = Router();
 
-router.get('/', ctrl.getAjustes) // Para leer (Footer)
-router.post('/', ctrl.createAjuste) // <-- NUEVA: Para agregar datos
-router.put('/:clave', ctrl.updateAjuste) // Para editar datos existentes
+router.get('/ajustes', getAjustesPublicos);
+router.get('/ajustes/:clave', getAjuste);
+router.get('/admin/ajustes', getAjustesAdmin);
+router.post('/admin/ajustes', createAjuste);
+router.put('/admin/ajustes/:clave', updateAjuste);
 
-export default router
+export default router;

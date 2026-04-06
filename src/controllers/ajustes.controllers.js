@@ -1,14 +1,43 @@
 import * as model from '../models/ajustes.models.js'
 
-export const getAjustes = async (req, res) => {
+// ==========================================
+// ENDPOINT PÚBLICO (Frontend)
+// ==========================================
+export const getAjustesPublicos = async (req, res) => {
     try {
         const rows = await model.getAllAjustes();
-        // Convertimos el array de filas en un objeto simple { clave: valor }
+        // Convertimos el array en un objeto { clave: valor } ocultando 'id' y 'descripcion'
         const settings = rows.reduce((acc, item) => {
             acc[item.clave] = item.valor;
             return acc;
         }, {});
         res.json(settings);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Obtener el valor de una sola clave (Ej: /ajustes/telefono)
+export const getAjuste = async (req, res) => {
+    try {
+        const { clave } = req.params;
+        const ajuste = await model.getAjusteByClave(clave);
+        
+        if (!ajuste) return res.status(404).json({ message: "Ajuste no encontrado" });
+        res.json(ajuste);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// ==========================================
+// ENDPOINT ADMIN (Panel de Control)
+// ==========================================
+export const getAjustesAdmin = async (req, res) => {
+    try {
+        // Devuelve todo el array tal cual: [{ id, clave, valor, descripcion }]
+        const rows = await model.getAllAjustes();
+        res.json(rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -42,7 +71,7 @@ export const createAjuste = async (req, res) => {
             data: nuevoAjuste
         });
     } catch (error) {
-        // Manejar error de clave duplicada (UNIQUE KEY en SQL)
+        // Manejar error de clave duplicada (UNIQUE KEY)
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ message: 'Esta clave ya existe' });
         }
