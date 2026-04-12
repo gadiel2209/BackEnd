@@ -32,7 +32,14 @@ export const createUsuario = async(req, res) => {
             return res.status(400).json({ message: 'Todos los campos son obligatorios' })
         }
 
-        const nuevo = await usuarioModelo.createUsuario(req.body)
+        // ✅ Hashear password antes de guardar
+        const salt = await bcrypt.genSalt(10)
+        const passwordHash = await bcrypt.hash(password, salt)
+
+        const nuevo = await usuarioModelo.createUsuario({ 
+            ...req.body, 
+            password: passwordHash 
+        })
         res.status(201).json(nuevo)
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') 
@@ -44,9 +51,11 @@ export const createUsuario = async(req, res) => {
 export const updateUsuario = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
+        if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
+        
         const datos = { ...req.body }
 
-        // Si viene password, hashearla con bcryptjs antes de guardar
+        // ✅ Ya estaba bien, hashea si viene password
         if (datos.password) {
             const salt = await bcrypt.genSalt(10)
             datos.password = await bcrypt.hash(datos.password, salt)
@@ -64,6 +73,8 @@ export const updateUsuario = async(req, res) => {
 export const deleteUsuario = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
+        if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' })
+        
         const afectados = await usuarioModelo.deleteUsuario(id)
         if (afectados === 0) return res.status(404).json({ message: 'Usuario no encontrado' })
 
