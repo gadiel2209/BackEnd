@@ -1,4 +1,5 @@
 import * as usuarioModelo from '../models/usuario.models.js'
+import bcrypt from 'bcryptjs'
 
 export const getAllUsuarios = async(req, res) => {
     try {
@@ -27,7 +28,6 @@ export const createUsuario = async(req, res) => {
     try {
         const { nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol } = req.body
 
-        // Validación de campos obligatorios según tu SQL
         if (!nombre || !ap_paterno || !ap_materno || !correo || !usuario || !password || !id_rol) {
             return res.status(400).json({ message: 'Todos los campos son obligatorios' })
         }
@@ -44,7 +44,15 @@ export const createUsuario = async(req, res) => {
 export const updateUsuario = async(req, res) => {
     try {
         const id = parseInt(req.params.id)
-        const afectados = await usuarioModelo.updateUsuario(id, req.body)
+        const datos = { ...req.body }
+
+        // Si viene password, hashearla con bcryptjs antes de guardar
+        if (datos.password) {
+            const salt = await bcrypt.genSalt(10)
+            datos.password = await bcrypt.hash(datos.password, salt)
+        }
+
+        const afectados = await usuarioModelo.updateUsuario(id, datos)
         if (afectados === 0) return res.status(404).json({ message: 'Usuario no encontrado' })
 
         res.status(200).json({ message: 'Usuario actualizado correctamente' })
@@ -61,7 +69,6 @@ export const deleteUsuario = async(req, res) => {
 
         res.status(200).json({ message: 'Usuario eliminado correctamente' })
     } catch (error) {
-        // Error 1451: El usuario tiene registros en auditoría o solicitudes
         if (error.code === 'ER_ROW_IS_REFERENCED_2')
             return res.status(409).json({ message: 'No se puede eliminar: el usuario tiene historial o solicitudes asociadas' })
         res.status(500).json({ message: error.message })
