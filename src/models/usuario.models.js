@@ -1,11 +1,12 @@
 import db from '../config/db.js'
+import bcrypt from 'bcrypt'
 
 // GET ALL
 export const getAllUsuarios = async () => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
-            u.correo, u.usuario, u.fecha_registro, u.id_rol,
-            r.nombre AS rol
+               u.correo, u.usuario, u.fecha_registro, u.id_rol,
+               r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
     `)
@@ -16,8 +17,8 @@ export const getAllUsuarios = async () => {
 export const getUsuarioById = async (id) => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
-            u.correo, u.usuario, u.fecha_registro, u.id_rol,
-            r.nombre AS rol
+               u.correo, u.usuario, u.fecha_registro, u.id_rol,
+               r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
         WHERE u.id_usuario = ?
@@ -29,16 +30,21 @@ export const getUsuarioById = async (id) => {
 export const createUsuario = async ({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
     const [result] = await db.query(
         `INSERT INTO usuarios (nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol)
-        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol]
     )
     return { id: result.insertId, nombre, ap_paterno, ap_materno, correo, usuario, id_rol }
 }
 
 // UPDATE — solo actualiza los campos que vienen en el body (dinámico)
+// Si viene password, la hashea con bcrypt antes de guardar
 export const updateUsuario = async (id, datos) => {
-    // Mapa de campos permitidos
     const camposPermitidos = ['nombre', 'ap_paterno', 'ap_materno', 'correo', 'usuario', 'id_rol', 'password']
+
+    // Hashear contraseña si viene en los datos
+    if (datos.password) {
+        datos.password = await bcrypt.hash(datos.password, 10)
+    }
 
     const sets = []
     const valores = []
@@ -50,9 +56,9 @@ export const updateUsuario = async (id, datos) => {
         }
     }
 
-    if (sets.length === 0) return 0 // Nada que actualizar
+    if (sets.length === 0) return 0
 
-    valores.push(id) // WHERE id_usuario = ?
+    valores.push(id)
 
     const [result] = await db.query(
         `UPDATE usuarios SET ${sets.join(', ')} WHERE id_usuario = ?`,
@@ -62,6 +68,7 @@ export const updateUsuario = async (id, datos) => {
 }
 
 // DELETE EN CASCADA MANUAL
+// Orden correcto según FK constraints del schema real:
 export const deleteUsuario = async (id) => {
     const conn = await db.getConnection()
     try {
