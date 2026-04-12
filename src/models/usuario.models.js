@@ -1,5 +1,4 @@
 import db from '../config/db.js'
-import bcrypt from 'bcrypt'
 
 // GET ALL
 export const getAllUsuarios = async () => {
@@ -38,12 +37,8 @@ export const createUsuario = async ({ nombre, ap_paterno, ap_materno, correo, us
 
 // UPDATE — solo actualiza los campos que vienen en el body (dinámico)
 export const updateUsuario = async (id, datos) => {
+    // Mapa de campos permitidos
     const camposPermitidos = ['nombre', 'ap_paterno', 'ap_materno', 'correo', 'usuario', 'id_rol', 'password']
-
-    // Hashear contraseña si viene en los datos
-    if (datos.password) {
-        datos.password = await bcrypt.hash(datos.password, 10)
-    }
 
     const sets = []
     const valores = []
@@ -55,9 +50,9 @@ export const updateUsuario = async (id, datos) => {
         }
     }
 
-    if (sets.length === 0) return 0
+    if (sets.length === 0) return 0 // Nada que actualizar
 
-    valores.push(id)
+    valores.push(id) // WHERE id_usuario = ?
 
     const [result] = await db.query(
         `UPDATE usuarios SET ${sets.join(', ')} WHERE id_usuario = ?`,
