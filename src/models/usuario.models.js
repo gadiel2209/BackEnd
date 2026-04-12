@@ -4,8 +4,8 @@ import db from '../config/db.js'
 export const getAllUsuarios = async () => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
-               u.correo, u.usuario, u.fecha_registro, u.id_rol,
-               r.nombre AS rol
+            u.correo, u.usuario, u.fecha_registro, u.id_rol,
+            r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
     `)
@@ -16,8 +16,8 @@ export const getAllUsuarios = async () => {
 export const getUsuarioById = async (id) => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
-               u.correo, u.usuario, u.fecha_registro, u.id_rol,
-               r.nombre AS rol
+            u.correo, u.usuario, u.fecha_registro, u.id_rol,
+            r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
         WHERE u.id_usuario = ?
@@ -29,19 +29,34 @@ export const getUsuarioById = async (id) => {
 export const createUsuario = async ({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
     const [result] = await db.query(
         `INSERT INTO usuarios (nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol]
     )
     return { id: result.insertId, nombre, ap_paterno, ap_materno, correo, usuario, id_rol }
 }
 
-// UPDATE
-export const updateUsuario = async (id, { nombre, ap_paterno, ap_materno, correo, usuario, id_rol }) => {
+// UPDATE — solo actualiza los campos que vienen en el body (dinámico)
+export const updateUsuario = async (id, datos) => {
+    // Mapa de campos permitidos
+    const camposPermitidos = ['nombre', 'ap_paterno', 'ap_materno', 'correo', 'usuario', 'id_rol', 'password']
+
+    const sets = []
+    const valores = []
+
+    for (const campo of camposPermitidos) {
+        if (datos[campo] !== undefined && datos[campo] !== null) {
+            sets.push(`${campo} = ?`)
+            valores.push(datos[campo])
+        }
+    }
+
+    if (sets.length === 0) return 0 // Nada que actualizar
+
+    valores.push(id) // WHERE id_usuario = ?
+
     const [result] = await db.query(
-        `UPDATE usuarios
-         SET nombre = ?, ap_paterno = ?, ap_materno = ?, correo = ?, usuario = ?, id_rol = ?
-         WHERE id_usuario = ?`,
-        [nombre, ap_paterno, ap_materno, correo, usuario, id_rol, id]
+        `UPDATE usuarios SET ${sets.join(', ')} WHERE id_usuario = ?`,
+        valores
     )
     return result.affectedRows
 }
