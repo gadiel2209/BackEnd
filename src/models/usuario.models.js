@@ -4,8 +4,8 @@ import db from '../config/db.js'
 export const getAllUsuarios = async () => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
-            u.correo, u.usuario, u.fecha_registro, u.id_rol,
-            r.nombre AS rol
+               u.correo, u.usuario, u.fecha_registro, u.id_rol,
+               r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
     `)
@@ -16,8 +16,8 @@ export const getAllUsuarios = async () => {
 export const getUsuarioById = async (id) => {
     const [rows] = await db.query(`
         SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
-            u.correo, u.usuario, u.fecha_registro, u.id_rol,
-            r.nombre AS rol
+               u.correo, u.usuario, u.fecha_registro, u.id_rol,
+               r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
         WHERE u.id_usuario = ?
@@ -29,7 +29,7 @@ export const getUsuarioById = async (id) => {
 export const createUsuario = async ({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
     const [result] = await db.query(
         `INSERT INTO usuarios (nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol)
-        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol]
     )
     return { id: result.insertId, nombre, ap_paterno, ap_materno, correo, usuario, id_rol }
@@ -39,21 +39,14 @@ export const createUsuario = async ({ nombre, ap_paterno, ap_materno, correo, us
 export const updateUsuario = async (id, { nombre, ap_paterno, ap_materno, correo, usuario, id_rol }) => {
     const [result] = await db.query(
         `UPDATE usuarios
-        SET nombre = ?, ap_paterno = ?, ap_materno = ?, correo = ?, usuario = ?, id_rol = ?
-        WHERE id_usuario = ?`,
+         SET nombre = ?, ap_paterno = ?, ap_materno = ?, correo = ?, usuario = ?, id_rol = ?
+         WHERE id_usuario = ?`,
         [nombre, ap_paterno, ap_materno, correo, usuario, id_rol, id]
     )
     return result.affectedRows
 }
 
 // DELETE EN CASCADA MANUAL
-// Orden correcto según FK constraints del schema real:
-// 1. auditoria           → FK directa a usuarios
-// 2. verificacion_correo → FK directa a usuarios
-// 3. reportes            → FK a solicitudes (que son del usuario)
-// 4. historial           → FK a solicitudes (que son del usuario)
-// 5. solicitudes         → FK directa a usuarios
-// 6. usuarios
 export const deleteUsuario = async (id) => {
     const conn = await db.getConnection()
     try {
@@ -64,10 +57,12 @@ export const deleteUsuario = async (id) => {
             `DELETE FROM auditoria WHERE id_usuario = ?`, [id]
         )
 
-        // 2. Verificación de correo
-        await conn.query(
-            `DELETE FROM verificacion_correo WHERE id_usuario = ?`, [id]
-        )
+        // 2. Verificación de correo — la tabla usa correo, no id_usuario
+        await conn.query(`
+            DELETE vc FROM verificacion_correo vc
+            INNER JOIN usuarios u ON vc.correo = u.correo
+            WHERE u.id_usuario = ?
+        `, [id])
 
         // 3. Reportes — via solicitudes del usuario
         await conn.query(`
