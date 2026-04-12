@@ -47,31 +47,51 @@ export const updateUsuario = async (id, { nombre, ap_paterno, ap_materno, correo
 }
 
 // DELETE EN CASCADA MANUAL
-// Borra en orden para no violar FK constraints:
-// 1. auditoría  2. devoluciones  3. préstamos  4. solicitudes  5. usuario
+// Orden correcto según FK constraints del schema real:
+// 1. auditoria           → FK directa a usuarios
+// 2. verificacion_correo → FK directa a usuarios
+// 3. reportes            → FK a solicitudes (que son del usuario)
+// 4. historial           → FK a solicitudes (que son del usuario)
+// 5. solicitudes         → FK directa a usuarios
+// 6. usuarios
 export const deleteUsuario = async (id) => {
     const conn = await db.getConnection()
     try {
         await conn.beginTransaction()
 
-        // 1. Auditoría (si tienes tabla de logs/auditoría referenciando al usuario)
-        await conn.query(`DELETE FROM auditoria WHERE id_usuario = ?`, [id])
+        // 1. Auditoría
+        await conn.query(
+            `DELETE FROM auditoria WHERE id_usuario = ?`, [id]
+        )
 
-        // 2. Devoluciones — dependen de préstamos, se borran primero
+        // 2. Verificación de correo
+        await conn.query(
+            `DELETE FROM verificacion_correo WHERE id_usuario = ?`, [id]
+        )
+
+        // 3. Reportes — via solicitudes del usuario
         await conn.query(`
-            DELETE d FROM devoluciones d
-            INNER JOIN prestamos p ON d.id_prestamo = p.id_prestamo
-            WHERE p.id_usuario = ?
+            DELETE r FROM reportes r
+            INNER JOIN solicitudes s ON r.id_solicitud = s.id_solicitud
+            WHERE s.id_usuario = ?
         `, [id])
 
-        // 3. Préstamos
-        await conn.query(`DELETE FROM prestamos WHERE id_usuario = ?`, [id])
+        // 4. Historial — via solicitudes del usuario
+        await conn.query(`
+            DELETE h FROM historial h
+            INNER JOIN solicitudes s ON h.id_solicitud = s.id_solicitud
+            WHERE s.id_usuario = ?
+        `, [id])
 
-        // 4. Solicitudes
-        await conn.query(`DELETE FROM solicitudes WHERE id_usuario = ?`, [id])
+        // 5. Solicitudes
+        await conn.query(
+            `DELETE FROM solicitudes WHERE id_usuario = ?`, [id]
+        )
 
-        // 5. Finalmente el usuario
-        const [result] = await conn.query(`DELETE FROM usuarios WHERE id_usuario = ?`, [id])
+        // 6. Usuario
+        const [result] = await conn.query(
+            `DELETE FROM usuarios WHERE id_usuario = ?`, [id]
+        )
 
         await conn.commit()
         return result.affectedRows
