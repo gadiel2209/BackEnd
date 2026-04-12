@@ -55,7 +55,6 @@ export const updateUsuario = async(req, res) => {
         
         const datos = { ...req.body }
 
-        // ✅ Ya estaba bien, hashea si viene password
         if (datos.password) {
             const salt = await bcrypt.genSalt(10)
             datos.password = await bcrypt.hash(datos.password, salt)
