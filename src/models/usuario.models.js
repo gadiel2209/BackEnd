@@ -1,85 +1,85 @@
 import db from '../config/db.js'
-import bcrypt from 'bcryptjs'
 
-// Obtener todos los usuarios con su rol
-export const getAllUsuarios = async() => {
+// GET ALL
+export const getAllUsuarios = async () => {
     const [rows] = await db.query(`
-        SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno, 
-               u.correo, u.usuario, u.id_rol, u.fecha_registro,
-               r.nombre AS rol
+        SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
+            u.correo, u.usuario, u.fecha_registro, u.id_rol,
+            r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
     `)
     return rows
 }
 
-// Obtener un usuario por ID
-export const getUsuarioById = async(id) => {
+// GET BY ID
+export const getUsuarioById = async (id) => {
     const [rows] = await db.query(`
-        SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno, 
-               u.correo, u.usuario, u.id_rol, u.fecha_registro,
-               r.nombre AS rol
+        SELECT u.id_usuario, u.nombre, u.ap_paterno, u.ap_materno,
+            u.correo, u.usuario, u.fecha_registro, u.id_rol,
+            r.nombre AS rol
         FROM usuarios u
         INNER JOIN roles r ON u.id_rol = r.id_rol
         WHERE u.id_usuario = ?
     `, [id])
     return rows[0]
 }
-// Actualizar solo la contraseña
-export const updatePassword = async(id, nuevaPasswordCifrada) => {
-    const [result] = await db.query(
-        `UPDATE usuarios SET password = ? WHERE id_usuario = ?`, 
-        [nuevaPasswordCifrada, id]
-    )
-    return result.affectedRows
-}
 
-// Crear nuevo usuario (Nota: password debe venir ya cifrada)
-export const createUsuario = async({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
-    // 2. Cifrar la contraseña antes de insertar
-    const salt = await bcrypt.genSalt(10);
-    const passwordCifrada = await bcrypt.hash(password, salt);
-
+// CREATE
+export const createUsuario = async ({ nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol }) => {
     const [result] = await db.query(
         `INSERT INTO usuarios (nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`, 
-        [nombre, ap_paterno, ap_materno, correo, usuario, passwordCifrada, id_rol]
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [nombre, ap_paterno, ap_materno, correo, usuario, password, id_rol]
     )
-    return { id: result.insertId, nombre, usuario, correo }
+    return { id: result.insertId, nombre, ap_paterno, ap_materno, correo, usuario, id_rol }
 }
 
-// Actualizar usuario existente
-export const updateUsuario = async (id, datos) => {
-    try {
-        // 3. Si en los datos viene 'password', la ciframos antes de seguir
-        if (datos.password) {
-            const salt = await bcrypt.genSalt(10);
-            datos.password = await bcrypt.hash(datos.password, salt);
-        }
-
-        const campos = Object.keys(datos);
-        if (campos.length === 0) return 0;
-
-        const setQuery = campos.map(campo => `${campo} = ?`).join(', ');
-        const valores = Object.values(datos);
-        valores.push(id);
-
-        const [result] = await db.query(
-            `UPDATE usuarios SET ${setQuery} WHERE id_usuario = ?`,
-            valores
-        );
-
-        return result.affectedRows;
-    } catch (error) {
-        console.error("Error en updateUsuario:", error.message);
-        throw error; 
-    }
-}
-
-// Eliminar usuario
-export const deleteUsuario = async(id) => {
+// UPDATE
+export const updateUsuario = async (id, { nombre, ap_paterno, ap_materno, correo, usuario, id_rol }) => {
     const [result] = await db.query(
-        'DELETE FROM usuarios WHERE id_usuario = ?', [id]
+        `UPDATE usuarios
+        SET nombre = ?, ap_paterno = ?, ap_materno = ?, correo = ?, usuario = ?, id_rol = ?
+        WHERE id_usuario = ?`,
+        [nombre, ap_paterno, ap_materno, correo, usuario, id_rol, id]
     )
     return result.affectedRows
+}
+
+// DELETE EN CASCADA MANUAL
+// Borra en orden para no violar FK constraints:
+// 1. auditoría  2. devoluciones  3. préstamos  4. solicitudes  5. usuario
+export const deleteUsuario = async (id) => {
+    const conn = await db.getConnection()
+    try {
+        await conn.beginTransaction()
+
+        // 1. Auditoría (si tienes tabla de logs/auditoría referenciando al usuario)
+        await conn.query(`DELETE FROM auditoria WHERE id_usuario = ?`, [id])
+
+        // 2. Devoluciones — dependen de préstamos, se borran primero
+        await conn.query(`
+            DELETE d FROM devoluciones d
+            INNER JOIN prestamos p ON d.id_prestamo = p.id_prestamo
+            WHERE p.id_usuario = ?
+        `, [id])
+
+        // 3. Préstamos
+        await conn.query(`DELETE FROM prestamos WHERE id_usuario = ?`, [id])
+
+        // 4. Solicitudes
+        await conn.query(`DELETE FROM solicitudes WHERE id_usuario = ?`, [id])
+
+        // 5. Finalmente el usuario
+        const [result] = await conn.query(`DELETE FROM usuarios WHERE id_usuario = ?`, [id])
+
+        await conn.commit()
+        return result.affectedRows
+
+    } catch (error) {
+        await conn.rollback()
+        throw error
+    } finally {
+        conn.release()
+    }
 }
