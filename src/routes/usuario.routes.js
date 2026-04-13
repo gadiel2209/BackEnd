@@ -4,8 +4,6 @@ import { verificarToken, soloAdmin } from '../middlewares/auth.middleware.js'
 
 const router = Router()
 
-router.patch('/:id/fix', ctrl.updateUsuario) // ← TEMPORAL
-
 router.get('/', verificarToken, soloAdmin, ctrl.getAllUsuarios)
 router.get('/:id', verificarToken, ctrl.getUsuarioById)
 router.post('/', verificarToken, soloAdmin, ctrl.createUsuario)
