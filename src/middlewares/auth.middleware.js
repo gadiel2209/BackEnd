@@ -4,24 +4,20 @@ import jwt from 'jsonwebtoken'
 // Úsalo en cualquier ruta que requiera sesión activa
 export const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    
+
     // LOG DE SEGURIDAD (Míralo en Vercel Logs)
     console.log("¿Llegó el header?:", authHeader);
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ 
-            message: 'Acceso denegado. Token requerido.',
-            debugHeader: authHeader || 'no llego nada' // Solo para pruebas
-        });
-    }
-    const token = authHeader.split(' ')[1]
-
     try {
         const verificado = jwt.verify(token, process.env.JWT_SECRET)
-        req.usuario = verificado   // { id, correo, usuario, id_rol }
+        req.usuario = verificado
         next()
     } catch (error) {
-        return res.status(403).json({ message: 'Token no válido o expirado.' })
+        console.log("Error JWT:", error.name, error.message) // ← agrega esto
+        return res.status(403).json({
+            message: 'Token no válido o expirado.',
+            error: error.name  // ← y esto temporalmente
+        })
     }
 }
 
