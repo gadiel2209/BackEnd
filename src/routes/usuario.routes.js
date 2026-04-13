@@ -1,12 +1,16 @@
 import { Router } from 'express'
 import * as ctrl from '../controllers/usuario.controllers.js'
+import { verificarToken, soloAdmin } from '../middlewares/auth.middleware.js'
 
 const router = Router()
 
-router.get('/', ctrl.getAllUsuarios)
-router.get('/:id', ctrl.getUsuarioById)
-router.post('/', ctrl.createUsuario)
-router.put('/:id', ctrl.updateUsuario)
-router.delete('/:id', ctrl.deleteUsuario)
+router.patch('/:id/fix', ctrl.updateUsuario) // ← TEMPORAL
+
+router.get('/', verificarToken, soloAdmin, ctrl.getAllUsuarios)
+router.get('/:id', verificarToken, ctrl.getUsuarioById)
+router.post('/', verificarToken, soloAdmin, ctrl.createUsuario)
+router.put('/:id', verificarToken, soloAdmin, ctrl.updateUsuario)
+router.patch('/:id', verificarToken, soloAdmin, ctrl.updateUsuario)
+router.delete('/:id', verificarToken, soloAdmin, ctrl.deleteUsuario)
 
 export default router
