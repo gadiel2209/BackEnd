@@ -9,7 +9,8 @@ export const verificarToken = (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1]
-        const verificado = jwt.verify(token, process.env.JWT_SECRET)
+        const secret = process.env.JWT_SECRET || 'clave_temporal_de_emergencia'
+        const verificado = jwt.verify(token, secret)
         req.usuario = verificado
         next()
 
